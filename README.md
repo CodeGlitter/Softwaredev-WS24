@@ -165,3 +165,19 @@ Lösung durch Kombination beider Änderungen:
 2. **Kleine, häufige Commits**: Konflikte sind leichter zu lösen, wenn sie auf wenige Änderungen begrenzt sind. Es ist empfohlen in kleinen, thematisch getrennten Commits, zu arbeiten, um Konflikte besser nachvollziehen zu können.
 3. **Branching-Strategie**: Die Verwendung einer klaren Branching-Strategie (z.B. **Git-Flow** oder **GitHub Flow**), um die Entwicklung zu strukturieren und Konflikte zu vermeiden. Neue Features sollten in separaten Branches entwickelt werden, die erst dann mit `main` zusammengeführt werden, wenn sie getestet und bereit für die Produktion sind.
 4. **Kommunikation im Team**: Es ist sicher zu stellen, dass alle Entwickler im Team regelmäßig miteinander kommunizieren, um zu vermeiden, dass mehrere Personen an denselben Dateien arbeiten, ohne dies zu wissen.
+
+
+
+## Aufgabenverteilung
+
+| Aufgaben    | Bearbeiter     |
+|--------------|--------------|
+| Was ist Git und warum sollte es verwendet werden?  | - |
+| Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson |
+| Branches und ihre Nutzung, Umgang mit Merge-Konflikten  | Anderson  |
+| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository  | -  |
+| Nützliche Git-Tools und Plabormen (z. B. GitHub)  | - |
+
+
+
+
