@@ -1,10 +1,39 @@
 # Softwaredev-WS24
-Handout Uebung 1 (Modernes Softwaredevelopment WS24)
+Handout Übung 1 (Modernes Softwaredevelopment WS24)
 
 ## Was ist Git und warum sollte es verwendet werden?
 
 [//]: # (Emma)
-Einführung
+
+
+Git ist ein  leistungsstarkes Tool für Entwickler, die in Form eines sogenannten *Versionskontrollsystems* den Codeverlauf von Projekten einfach verwalten können. Es ermöglicht mehreren Entwicklern, gleichzeitig an einem Projekt zu arbeiten, ohne dass Änderungen verloren gehen.
+
+Grundlegende Funktionen und Vorteile:
+
+1. **Versionskontrolle:** Git speichert den Verlauf aller Änderungen, sodass der Abgleich oder die Rückkehr zu früheren Versionen jederzeit möglich ist.
+
+
+2. **Zugriff auf gemeinsame Dateien:** Jeder Entwickler hat eine vollständige Kopie des Repositories auf seinem Rechner. Änderungen können offline vorgenommen werden und lokal gespeichert werden.
+
+
+3. **Branching:** Git ermöglicht die Erstellung von verschiedenen Entwicklungszweige (Branches). So können, ohne den Haupt-Code zu beeinträchtigen, Bugfixes durchgeführt und neue Features entwickelt werden. Das System bleibt stabil.
+
+
+4. **Zusammenarbeit:** Entwickler können Änderungen über Pull-Requests zusammenführen, was die Zusammenarbeit erleichtert und eine Überprüfung ermöglicht. 
+
+
+5. **Open Source:** Git ist kostenlos und wird von einer großen Community unterstützt. Weiterhin ist eine unkomplizierte Nutzung über verschiedene Provider, z.B. GitHub, möglich.
+
+
+
+
+Weitere Vorteile ergeben sich aus der Effizienz des Systems durch zeitliche und lokale Flexibilität  und die Möglichkeit zum verlustfreien Arbeiten.
+
+
+
+
+
+
 
 ## Grundlegende Git-Befehle
 Git-Befehle steuern und organisieren spezifische Aktionen innerhalb des Versionskontrollsystems **Git**. Sie ermöglichen Entwicklern, den gesamten Entwicklungsprozess von Projekten zu verwalten, indem sie verschiedene Funktionen wie das Verfolgen von Änderungen, die Zusammenarbeit mit anderen und die Verwaltung von Versionen bereitstellen.  
