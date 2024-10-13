@@ -1,0 +1,18 @@
+# Placeholder .gitignore file for future use
+# Add file patterns to ignore here as needed
+
+# Example: Ignore system files (if needed)
+# .DS_Store
+
+# Example: Ignore temporary or backup files
+# *.tmp
+# *.bak
+
+# Example: Ignore node_modules (if you later use JavaScript tooling)
+# node_modules/
+
+# Example: Ignore logs
+# *.log
+
+# Example: Ignore environment variable files
+# .env
