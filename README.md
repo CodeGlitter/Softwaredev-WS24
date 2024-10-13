@@ -1,7 +1,9 @@
 # Softwaredev-WS24
 Handout Uebung 1 (Modernes Softwaredevelopment WS24)
 
+## Was ist Git und warum sollte es verwendet werden?
 
+[//]: # (Emma)
 
 ## Grundlegende Git-Befehle
 Git-Befehle steuern und organisieren spezifische Aktionen innerhalb des Versionskontrollsystems **Git**. Sie ermöglichen Entwicklern, den gesamten Entwicklungsprozess von Projekten zu verwalten, indem sie verschiedene Funktionen wie das Verfolgen von Änderungen, die Zusammenarbeit mit anderen und die Verwaltung von Versionen bereitstellen.  
@@ -211,17 +213,24 @@ Lösung durch Kombination beider Änderungen:
 3. **Branching-Strategie**: Die Verwendung einer klaren Branching-Strategie (z.B. **Git-Flow** oder **GitHub Flow**), um die Entwicklung zu strukturieren und Konflikte zu vermeiden. Neue Features sollten in separaten Branches entwickelt werden, die erst dann mit `main` zusammengeführt werden, wenn sie getestet und bereit für die Produktion sind.
 4. **Kommunikation im Team**: Es ist sicher zu stellen, dass alle Entwickler im Team regelmäßig miteinander kommunizieren, um zu vermeiden, dass mehrere Personen an denselben Dateien arbeiten, ohne dies zu wissen.
 
+## Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
 
+[//]: # (Jesse)
+
+## Nützliche Git-Tools und Plabormen (z. B. GitHub)
+
+[//]: # (Svetlana, Jesse)
 
 ## Aufgabenverteilung
 
-| Aufgaben    | Bearbeiter     |
-|--------------|--------------|
-| Was ist Git und warum sollte es verwendet werden?  | - |
-| Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson |
-| Branches und ihre Nutzung, Umgang mit Merge-Konflikten  | Anderson  |
-| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository  | -  |
-| Nützliche Git-Tools und Plabormen (z. B. GitHub)  | - |
+| Aufgaben                                                                  | Bearbeiter |
+|---------------------------------------------------------------------------|------------|
+| Git Repository auf GitHub anlegen und Team einladen                       | Emma       |
+| Was ist Git und warum sollte es verwendet werden?                         | -          |
+| Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson   |
+| Branches und ihre Nutzung, Umgang mit Merge-Konflikten                    | Anderson   |
+| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository | -          |
+| Nützliche Git-Tools und Plattformen (z. B. GitHub)                        | -          |
 
 
 
