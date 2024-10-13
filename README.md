@@ -1,7 +1,17 @@
-# Softwaredev-WS24
-Handout Übung 1 (Modernes Softwaredevelopment WS24)
+# Inhaltsverzeichnis
+ **1. Git: Programminformationen und Vorteile bei der Nutzung**
 
-## Was ist Git und warum sollte es verwendet werden?
+**2. Grundlegende Git-Befehle**
+
+**3. Branches und ihre Nutzung und Umgang mit Merge-Konflikten**
+
+**4. Kombination von Git mit IntelliJ/PyCharm: Local Repository und Remote Repository**
+
+**5. Nützliche Git-Tools und Plattformen**
+
+
+
+## Git: Programminformationen und Vorteile bei der Nutzung
 
 [//]: # (Emma)
 
@@ -178,7 +188,7 @@ Zeigt die Unterschiede zwischen dem aktuellen Arbeitsverzeichnis und der Staging
 
 
 
-## Branches und ihre Nutzung, Umgang mit Merge-Konflikten
+## Branches und ihre Nutzung und Umgang mit Merge-Konflikten
 
 
 ### 1. Branches und ihre Nutzung
@@ -247,7 +257,7 @@ Lösung durch Kombination beider Änderungen:
 
 [//]: # (Jesse)
 
-## Nützliche Git-Tools und Plattformen (z. B. GitHub)
+## Nützliche Git-Tools und Plattformen 
 
 [//]: # (Svetlana, Jesse)
 
