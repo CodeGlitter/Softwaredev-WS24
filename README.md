@@ -255,7 +255,7 @@ Bitbucket ist eine Plattform für die Versionskontrolle, die von Atlassian betri
 | Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson |
 | Branches und ihre Nutzung, Umgang mit Merge-Konflikten  | Anderson  |
 | Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository  | -  |
-| Nützliche Git-Tools und Plattformen (z. B. GitHub)  | - |
+| Nützliche Git-Tools und Plattformen (z. B. GitHub)  | Svetlana |
 
 
 
