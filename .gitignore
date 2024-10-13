@@ -16,3 +16,10 @@
 
 # Example: Ignore environment variable files
 # .env
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+Desktop.ini
