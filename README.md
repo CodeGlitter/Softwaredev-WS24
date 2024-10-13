@@ -231,7 +231,7 @@ function example() {
 ```
 Lösung durch Kombination beider Änderungen:
 
-##### Änderungen markieren, committen und Merge Abschließen
+##### Änderungen markieren, committen und Merge abschließen
 - Nachdem die Konflikte in allen Dateien behoben wurden, müssen die betroffenen Dateien zum Staging-Bereich hinzufügt werden: `git add src/app.js`.
 - Den Status mit `git status` überprüfen. Wenn alle Konflikte gelöst wurden, kann der Merge-Vorgang mit dem Commiten der Änderungen abschloßen werden: `git commit`.
 - Nach dem Commit ist der Merge abgeschlossen, und der Konflikt ist behoben. Der Branch kann gepusht werden, um die Änderungen mit dem Remote-Repository zu synchronisieren: `git push origin main`.
@@ -243,11 +243,11 @@ Lösung durch Kombination beider Änderungen:
 3. **Branching-Strategie**: Die Verwendung einer klaren Branching-Strategie (z.B. **Git-Flow** oder **GitHub Flow**), um die Entwicklung zu strukturieren und Konflikte zu vermeiden. Neue Features sollten in separaten Branches entwickelt werden, die erst dann mit `main` zusammengeführt werden, wenn sie getestet und bereit für die Produktion sind.
 4. **Kommunikation im Team**: Es ist sicher zu stellen, dass alle Entwickler im Team regelmäßig miteinander kommunizieren, um zu vermeiden, dass mehrere Personen an denselben Dateien arbeiten, ohne dies zu wissen.
 
-## Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
+## Kombination von Git mit IntelliJ/PyCharm: Local Repository und Remote Repository
 
 [//]: # (Jesse)
 
-## Nützliche Git-Tools und Plabormen (z. B. GitHub)
+## Nützliche Git-Tools und Plattformen (z. B. GitHub)
 
 [//]: # (Svetlana, Jesse)
 
@@ -256,7 +256,7 @@ Lösung durch Kombination beider Änderungen:
 | Aufgaben                                                                  | Bearbeiter |
 |---------------------------------------------------------------------------|------------|
 | Git Repository auf GitHub anlegen und Team einladen                       | Emma       |
-| Was ist Git und warum sollte es verwendet werden?                         | -          |
+| Was ist Git und warum sollte es verwendet werden?                         | Emma       |
 | Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson   |
 | Branches und ihre Nutzung, Umgang mit Merge-Konflikten                    | Anderson   |
 | Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository | -          |
