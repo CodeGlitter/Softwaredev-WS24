@@ -214,8 +214,8 @@ Der Umgang mit Merge-Konflikten ist ein wichtiger Bestandteil der Versionskontro
 #### Konflikte in den Dateien manuell beheben
 Öffne die betroffenen Dateien in einem Texteditor. Git kennzeichnet die Konfliktstellen automatisch mit speziellen **Konfliktmarkierungen**, damit der Konflikt leichter erkannt wird.  
 **Beispiel**:  
-```javascript
-&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+```kotlin
+<<<<<<< HEAD
 // Code aus dem aktuellen Branch (main)
 function example() {
     console.log('Hello from main branch!');
@@ -224,7 +224,7 @@ function example() {
 function example() {
     console.log('Hello from feature-xyz branch!');
 }
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-xyz
+>>>>>>> feature-xyz
 ```
 - Alles zwischen `<<<<<<< HEAD` und `=======` stammt aus dem Branch, in dem man sich aktuell befindet (z.B. `main`).
 - Alles zwischen `=======` und `>>>>>>> feature-xyz` stammt aus dem Branch, den man mergen möchte (z.B. `feature-xyz`).
@@ -238,7 +238,7 @@ function example() {
     console.log('Hello from feature-xyz branch!');
 }
 ```
-Lösung durch Kombination beider Änderungen:
+*Lösung durch Kombination beider Änderungen*
 
 ##### Änderungen markieren, committen und Merge abschließen
 - Nachdem die Konflikte in allen Dateien behoben wurden, müssen die betroffenen Dateien zum Staging-Bereich hinzufügt werden: `git add src/app.js`.
