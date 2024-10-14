@@ -280,7 +280,7 @@ Bevor du beginnst, stelle sicher, dass du Folgendes installiert und eingerichtet
 
 ![Beispiel Github Copy Remote](https://i.ibb.co/YfMgDG3/GH-copy-URL.webp)
 
-*Beispiel: Commit via GUI*
+*Beispiel: Copy GitHub URL*
 
 2. **Remote Repository zum lokalen Projekt hinzufügen**:
  - In IntelliJ/PyCharm, gehe zu "Git > Manage Remotes".
