@@ -213,11 +213,98 @@ Lösung durch Kombination beider Änderungen:
 3. **Branching-Strategie**: Die Verwendung einer klaren Branching-Strategie (z.B. **Git-Flow** oder **GitHub Flow**), um die Entwicklung zu strukturieren und Konflikte zu vermeiden. Neue Features sollten in separaten Branches entwickelt werden, die erst dann mit `main` zusammengeführt werden, wenn sie getestet und bereit für die Produktion sind.
 4. **Kommunikation im Team**: Es ist sicher zu stellen, dass alle Entwickler im Team regelmäßig miteinander kommunizieren, um zu vermeiden, dass mehrere Personen an denselben Dateien arbeiten, ohne dies zu wissen.
 
-## Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
+# Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
 
-[//]: # (Jesse)
+Nachdem die grundlegenden Git-Befehle und der Umgang mit Branches erklärt wurden, wird in diesem Abschnitt die Nutzung von Git in Verbindung mit den Entwicklungsumgebungen IntelliJ und PyCharm behandelt. 
+Dies ermöglicht eine effiziente Verwaltung lokaler und entfernter Repositories direkt aus der IDE.
 
-## Nützliche Git-Tools und Plabormen (z. B. GitHub)
+# Git mit IntelliJ/PyCharm benutzen: Lokales und Remote Repository
+
+## Voraussetzungen
+
+Bevor du beginnst, stelle sicher, dass du Folgendes installiert und eingerichtet hast:
+
+- **Git**: Lade Git von [git-scm.com](https://git-scm.com/) herunter und installiere es.
+- **IntelliJ** oder **PyCharm**: Wähle die für deine Programmiersprache geeignete IDE von [JetBrains](https://www.jetbrains.com/) und installiere sie.
+- **Git-Integration**: Die JetBrains IDEs haben in der Regel Git bereits integriert. Überprüfe in den Einstellungen unter "Version Control > Git", ob der Pfad zur Git-ausführbaren Datei korrekt ist.
+
+## Lokales Repository erstellen
+
+1. **Neues Projekt anlegen**:
+ - Öffne IntelliJ IDEA oder PyCharm.
+ - Wähle "File > New > Project" aus dem Hauptmenü.
+ - Konfiguriere dein Projekt nach Bedarf und klicke auf "Create".
+
+![Beispiel Neues Projekt](https://i.ibb.co/61fYYCp/IJ-Neues-Projekt-small.webp)
+
+*Beispiel: Neues Projekt anlegen*
+
+2. **Git-Initialisierung**:
+ - Navigiere zu "VCS > Enable Version Control Integration" im Menü.
+ - Wähle "Git" aus dem Dropdown-Menü und bestätige.
+- Alternativ kannst du im Terminal-Fenster der IDE `git init` eingeben.
+
+![Beispiel Git](https://i.ibb.co/HNv3VPX/IJ-VCS-Git-s.webp)
+
+*Beispiel: Menüpunkt "VCS > Enable Version Control Integration > Git"*
+
+3. **Erste Dateien hinzufügen und committen**:
+- Erstelle oder bearbeite Dateien in deinem Projekt.
+- Du hast nun zwei Möglichkeiten zum Committen:
+
+  a) Über die IDE:
+  - Öffne das "Commit"-Fenster (Alt + 0 oder ⌘0).
+  - Wähle die zu committenden Dateien aus.
+  - Gib eine aussagekräftige Commit-Nachricht ein.
+  - Klicke auf "Commit" oder "Commit and Push".
+
+  b) Über das Terminal in der IDE:
+  - Öffne das Terminal-Fenster in der IDE.
+  - Füge Dateien zum Staging-Bereich hinzu mit: 
+    - `git add .` (für alle Änderungen) oder 
+    - `git add <dateiname>` (für spezifische Dateien).
+  - Führe den Commit aus mit: 
+    - `git commit -m "Deine aussagekräftige Commit-Nachricht"`.
+  - Optional: Pushe die Änderungen mit: 
+    - `git push`.
+
+![Beispiel Commit](https://i.ibb.co/rH4n2RH/IJ-commit.webp)
+
+*Beispiel: Commit-Möglichkeit via GUI*
+  
+## Remote Repository verbinden
+
+1. **Remote Repository erstellen**:
+ - Gehe zu GitHub, GitLab oder Bitbucket und erstelle ein neues Repository.
+ - Kopiere die URL des Remote-Repositories.
+
+![Beispiel Github Copy Remote](https://i.ibb.co/YfMgDG3/GH-copy-URL.webp)
+
+*Beispiel: Commit via GUI*
+
+2. **Remote Repository zum lokalen Projekt hinzufügen**:
+ - In IntelliJ/PyCharm, gehe zu "Git > Manage Remotes".
+ - Klicke auf das "+"-Symbol, um ein neues Remote hinzuzufügen.
+ - Gib "origin" als Name ein und füge die kopierte URL ein.
+ - Bestätige mit "OK".
+
+![Beispiel IntelliJ Manage Remotes](https://i.ibb.co/BfGH1Wd/IJ-manage-remotes.webp)
+
+*Beispiel: Remote Repository hinzufügen*
+
+3. **Änderungen pushen**:
+ - Wähle "Git > Push" aus dem Menü oder nutze das "Commit"-Fenster.
+ - Wähle den Branch aus, den du pushen möchtest (meist "master" oder "main").
+ - Klicke auf "Push", um deine Änderungen zum Remote-Repository zu senden.
+
+
+## Abschlussbemerkung
+
+Die Integration von Git in IntelliJ/PyCharm bietet eine verknüpfte Versionskontrolle direkt in deiner Entwicklungsumgebung. 
+Diese Tools vereinfachen den Git-Workflow, indem sie visuelle Unterstützung für Commits, Merges und die Verwaltung von Branches bieten. 
+Durch die Nutzung der integrierten Funktionen von IntelliJ/PyCharm kannst du effizienter arbeiten und dich besser auf den Code konzentrieren, während du gleichzeitig von den Vorteilen der Versionskontrolle profitierst.
+
+# Nützliche Git-Tools und Plattormen (z. B. GitHub)
 
 [//]: # (Svetlana, Jesse)
 
@@ -229,7 +316,7 @@ Lösung durch Kombination beider Änderungen:
 | Was ist Git und warum sollte es verwendet werden?                         | -          |
 | Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson   |
 | Branches und ihre Nutzung, Umgang mit Merge-Konflikten                    | Anderson   |
-| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository | -          |
+| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository | Jesse      |
 | Nützliche Git-Tools und Plattformen (z. B. GitHub)                        | -          |
 
 
