@@ -199,7 +199,7 @@ function example() {
     console.log('Hello from feature-xyz branch!');
 }
 ```
-Lösung durch Kombination beider Änderungen:
+*Lösung durch Kombination beider Änderungen*
 
 ##### Änderungen markieren, committen und Merge Abschließen
 - Nachdem die Konflikte in allen Dateien behoben wurden, müssen die betroffenen Dateien zum Staging-Bereich hinzufügt werden: `git add src/app.js`.
