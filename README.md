@@ -1,7 +1,9 @@
 # Softwaredev-WS24
 Handout Uebung 1 (Modernes Softwaredevelopment WS24)
 
+## Was ist Git und warum sollte es verwendet werden?
 
+[//]: # (Emma)
 
 ## Grundlegende Git-Befehle
 Git-Befehle steuern und organisieren spezifische Aktionen innerhalb des Versionskontrollsystems **Git**. Sie ermöglichen Entwicklern, den gesamten Entwicklungsprozess von Projekten zu verwalten, indem sie verschiedene Funktionen wie das Verfolgen von Änderungen, die Zusammenarbeit mit anderen und die Verwaltung von Versionen bereitstellen.  
@@ -174,7 +176,7 @@ Der Umgang mit Merge-Konflikten ist ein wichtiger Bestandteil der Versionskontro
 Öffne die betroffenen Dateien in einem Texteditor. Git markiert die Konfliktstellen automatisch mit speziellen **Konfliktmarkierungen**, damit der Konflikt leichter erkannt wird.  
 **Beispiel**:  
 ```javascript
-<<<<<<< HEAD
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 // Code aus dem aktuellen Branch (main)
 function example() {
     console.log('Hello from main branch!');
@@ -183,7 +185,7 @@ function example() {
 function example() {
     console.log('Hello from feature-xyz branch!');
 }
->>>>>>> feature-xyz
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-xyz
 ```
 - Alles zwischen `<<<<<<< HEAD` und `=======` stammt aus dem Branch, in dem man sich aktuell befindet (z.B. `main`).
 - Alles zwischen `=======` und `>>>>>>> feature-xyz` stammt aus dem Branch, den man mergen möchte (z.B. `feature-xyz`).
@@ -211,6 +213,7 @@ Lösung durch Kombination beider Änderungen:
 3. **Branching-Strategie**: Die Verwendung einer klaren Branching-Strategie (z.B. **Git-Flow** oder **GitHub Flow**), um die Entwicklung zu strukturieren und Konflikte zu vermeiden. Neue Features sollten in separaten Branches entwickelt werden, die erst dann mit `main` zusammengeführt werden, wenn sie getestet und bereit für die Produktion sind.
 4. **Kommunikation im Team**: Es ist sicher zu stellen, dass alle Entwickler im Team regelmäßig miteinander kommunizieren, um zu vermeiden, dass mehrere Personen an denselben Dateien arbeiten, ohne dies zu wissen.
 
+## Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
 
 ## Nützliche Git-Tools und Plattformen
 
@@ -245,17 +248,17 @@ GitLab ist eine umfassende Plattform für DevOps, die den gesamten Softwareentwi
 ### Bitbucket
 Bitbucket ist eine Plattform für die Versionskontrolle, die von Atlassian betrieben wird. Sie ist eng mit anderen Atlassian-Produkten wie Jira und Confluence integriert, was sie zu einer guten Wahl für Teams macht, die bereits in der Atlassian-Umgebung arbeiten. Bitbucket unterstützt Git und ermöglicht es Entwicklern, Pull Requests und Code-Reviews durchzuführen sowie CI/CD-Pipelines (Continuous Integration, Continuous Deployment) direkt in der Plattform zu verwalten. Es ist besonders bei Unternehmen und Teams beliebt, die ihre Softwareentwicklungsprozesse mit anderen Atlassian-Tools koordinieren wollen.
 
-
-
 ## Aufgabenverteilung
 
-| Aufgaben    | Bearbeiter     |
-|--------------|--------------|
-| Was ist Git und warum sollte es verwendet werden?  | - |
-| Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson |
-| Branches und ihre Nutzung, Umgang mit Merge-Konflikten  | Anderson  |
-| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository  | -  |
-| Nützliche Git-Tools und Plattformen (z. B. GitHub)  | Svetlana |
+| Aufgaben                                                                  | Bearbeiter |
+|---------------------------------------------------------------------------|------------|
+| Git Repository auf GitHub anlegen und Team einladen                       | Emma       |
+| Was ist Git und warum sollte es verwendet werden?                         | -          |
+| Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)  | Anderson   |
+| Branches und ihre Nutzung, Umgang mit Merge-Konflikten                    | Anderson   |
+| Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository | -          |
+| Nützliche Git-Tools und Plattformen (z. B. GitHub)                        | Svetlana   |
+
 
 
 
