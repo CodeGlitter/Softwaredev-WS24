@@ -254,11 +254,10 @@ Lösung durch Kombination beider Änderungen:
 
 ## Kombination von Git mit IntelliJ/PyCharm: Local Repository und Remote Repository
 
-[//]: # (Jesse)
 
 ## Nützliche Git-Tools und Plattformen 
 
-[//]: # (Svetlana, Jesse)
+
 
 ## Aufgabenverteilung
 
