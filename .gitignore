@@ -1,2 +1,5 @@
 ## Exclude IntelliJ settings folder
 .idea/
+
+## Exclude macOS system files
+.DS_Store
