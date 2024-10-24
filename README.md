@@ -204,16 +204,16 @@ Der Umgang mit Merge-Konflikten ist ein wichtiger Bestandteil der Versionskontro
 Öffne die betroffenen Dateien in einem Texteditor. Git kennzeichnet die Konfliktstellen automatisch mit speziellen **Konfliktmarkierungen**, damit der Konflikt leichter erkannt wird.  
 **Beispiel**:  
 ```kotlin
-<<<<<<< HEAD
+
 // Code aus dem aktuellen Branch (main)
 function example() {
     console.log('Hello from main branch!');
 }
-=======
+
 function example() {
     console.log('Hello from feature-xyz branch!');
 }
->>>>>>> feature-xyz
+
 ```
 - Alles zwischen `<<<<<<< HEAD` und `=======` stammt aus dem Branch, in dem man sich aktuell befindet (z.B. `main`).
 - Alles zwischen `=======` und `>>>>>>> feature-xyz` stammt aus dem Branch, den man mergen möchte (z.B. `feature-xyz`).
@@ -364,12 +364,18 @@ GitHub ist eine der bekanntesten Plattformen für Versionskontrolle und Software
 #### GitLab
 GitLab ist eine umfassende Plattform für DevOps, die den gesamten Softwareentwicklungsprozess von der Planung bis zur Bereitstellung abdeckt. Neben der Versionskontrolle bietet GitLab Funktionen wie Continuous Integration/Continuous Deployment (CI/CD), die vollständig in die Plattform integriert sind. Dadurch können Entwickler automatisierte Pipelines zur Durchführung von Tests und zur Bereitstellung von Software einrichten. GitLab eignet sich besonders für Teams, die eine zentrale Lösung für alle Phasen der Softwareentwicklung suchen.
 
+
+=======
 ### Bitbucket
 Bitbucket ist eine Plattform für die Versionskontrolle, die von Atlassian betrieben wird. Sie ist eng mit anderen Atlassian-Produkten wie Jira und Confluence integriert, was sie zu einer guten Wahl für Teams macht, die bereits in der Atlassian-Umgebung arbeiten. Bitbucket unterstützt Git und ermöglicht es Entwicklern, Pull Requests und Code-Reviews durchzuführen sowie CI/CD-Pipelines (Continuous Integration, Continuous Deployment) direkt in der Plattform zu verwalten. Es ist besonders bei Unternehmen und Teams beliebt, die ihre Softwareentwicklungsprozesse mit anderen Atlassian-Tools koordinieren wollen.
 
+
 # 6. Wichtige Erkenntnisse für Git-Anfänger
 
+
+=======
 Die Verwendung von Git in der Softwareentwicklung ist unerlässlich, um eine effektive Zusammenarbeit und Versionierung zu gewährleisten. Mit den richtigen Werkzeugen und Plattformen können Entwickler ihre Arbeitsabläufe optimieren und die Qualität ihrer Projekte steigern. Für Anfänger mag Git zunächst überwältigend erscheinen, doch mit der Zeit wird es einfacher und intuitiver. Git ist ein wesentlicher Bestandteil moderner Softwareentwicklung, der es ermöglicht, effektiver im Team zu arbeiten und den Überblick über den Codeverlauf zu behalten.
+
 
 ## Aufgabenverteilung
 
