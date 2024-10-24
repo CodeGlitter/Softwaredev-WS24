@@ -1,1 +1,2 @@
-## Initial file creation
+## Exclude IntelliJ settings folder
+.idea/
