@@ -3,3 +3,4 @@
 
 ## Exclude macOS system files
 .DS_Store
+.doc#
