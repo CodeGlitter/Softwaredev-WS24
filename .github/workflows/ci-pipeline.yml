@@ -22,11 +22,11 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
-        working-directory: ./App  # Add this line to change the working directory
+        working-directory: ./App/city-feedback  # Updated path
         run: mvn -B clean package --file pom.xml
 
       - name: Run Tests
-        working-directory: ./App  # Add this line to change the working directory
+        working-directory: ./App/city-feedback  # Updated path
         run: mvn test
 
       - name: Store Test Results
@@ -34,10 +34,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: App/target/surefire-reports/  # Update path to include App directory
+          path: App/city-feedback/target/surefire-reports/  # Updated path
 
       - name: Store Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: app-build
-          path: App/target/*.jar  # Update path to include App directory
+          path: App/city-feedback/target/*.jar  # Updated path
