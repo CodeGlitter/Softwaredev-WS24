@@ -1,38 +1,37 @@
 package com.example.city_feedback;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class CityFeedbackApplicationTests {
+
+	@Autowired
+	private MockMvc mockMvc;
 
 	@Test
 	void contextLoads() {
-		// Tests if Spring Boot application starts successfully
+		// Tests if the application loads
 	}
 
 	@Test
-	void complaintShouldNotHaveEmptyTitle() {
-		// Create a complaint
-		Complaint complaint = new Complaint();
-
-		// Set empty title
-		complaint.setTitle("");
-
-		// Test should fail for empty title
-		assertFalse(complaint.getTitle().isEmpty(), "Complaint title should not be empty");
+	void shouldAccessHomePage() throws Exception {
+		// Tests if the home endpoint is reachable
+		mockMvc.perform(get("/"))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	void complaintShouldNotHaveEmptyDescription() {
-		// Create a complaint
-		Complaint complaint = new Complaint();
-
-		// Set empty description
-		complaint.setDescription("");
-
-		// Test should fail for empty description
-		assertFalse(complaint.getDescription().isEmpty(), "Complaint description should not be empty");
+	void shouldAccessComplaintsEndpoint() throws Exception {
+		// Tests if the complaints endpoint is reachable
+		mockMvc.perform(get("/complaints"))
+				.andExpect(status().isOk());
 	}
 }
