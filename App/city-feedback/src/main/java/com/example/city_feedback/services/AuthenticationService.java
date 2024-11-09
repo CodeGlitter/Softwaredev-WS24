@@ -57,7 +57,7 @@ public class AuthenticationService implements UserService {
     }
 
     private void validatePhone(String phone) throws InvalidInputException {
-        if (!phone.matches("^(\\+\\d{1,3}[- ]?)?\\d{7,15}$|^$")) {
+        if (!phone.matches("^(\\+\\d{1,3}[- ]?)?([\\d, /-]*\\d){7,15}$")) {
             throw new InvalidInputException("Ungültige Telefonnummer");
         }
     }
