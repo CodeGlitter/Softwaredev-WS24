@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Header</title>
@@ -33,14 +32,14 @@
                               <li><a class="dropdown-item" href="#">Hotels</a></li>
                           </ul>
                       </li>
-                      <li class="nav-item">
+                      <li class="nav-item" th:if="${currentUser == null}">
                           <a class="nav-link" th:href="@{/sign-in}">Anmelden</a>
                       </li>
-                      <li class="nav-item" sec:authorize="isAuthenticated()">
+                      <li class="nav-item" th:if="${currentUser}">
                           <a class="nav-link" th:href="@{/logout}">Ausloggen</a>
                       </li>
-                      <li class="nav-item">
-                          <label class="nav-link">Hallo <span sec:authentication="principal.username">Nutzer</span> 😀</label>
+                      <li class="nav-item" th:if="${currentUser}">
+                          <label class="nav-link">Hallo <span th:text="${currentUser.firstName}">Nutzer</span> 😀</label>
                       </li>
                   </ul>
                   <form class="d-flex" role="search">

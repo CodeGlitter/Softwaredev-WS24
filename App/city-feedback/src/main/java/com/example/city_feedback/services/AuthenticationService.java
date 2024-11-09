@@ -4,7 +4,6 @@ import com.example.city_feedback.DTO.UserRegistrationDto;
 import com.example.city_feedback.Exceptions.InvalidInputException;
 import com.example.city_feedback.domain.User;
 import com.example.city_feedback.repositories.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
