@@ -12,7 +12,6 @@ public class Complaint {
     private String title;
     private String description;
     private String location;
-    private ComplaintProgress progress;
     private LocalDateTime createdAt;
 
     // Advanced Java Feature: Lambda for input validation
@@ -21,7 +20,6 @@ public class Complaint {
     // Private constructor to enforce use of builder
     private Complaint() {
         this.createdAt = LocalDateTime.now();
-        this.progress = ComplaintProgress.NEW;
     }
 
     /**
@@ -82,10 +80,6 @@ public class Complaint {
 
     public String getLocation() {
         return location;
-    }
-
-    public ComplaintProgress getProgress() {
-        return progress;
     }
 
     public LocalDateTime getCreatedAt() {

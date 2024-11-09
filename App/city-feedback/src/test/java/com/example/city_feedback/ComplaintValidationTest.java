@@ -2,6 +2,7 @@ package com.example.city_feedback;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import com.example.city_feedback.domain.Complaint;
 
 /**
  * Test class for ComplaintValidator
@@ -66,4 +67,27 @@ class ComplaintValidationTest {
                         "Die Straßenlaterne an der Ecke Hauptstraße/Kirchweg ist seit drei Tagen defekt."),
                 "Should accept a detailed description with proper length");
     }
+
+    @Test
+    void whenBuildingValidComplaint_thenIsValidReturnsTrue() {
+        Complaint complaint = Complaint.builder()
+                .withTitle("Defekte Straßenlaterne")
+                .withDescription("Die Straßenlaterne an der Ecke ist defekt")
+                .withLocation("Hauptstraße 123")
+                .build();
+
+        assertTrue(complaint.isValid());
+    }
+
+    @Test
+    void whenBuildingInvalidComplaint_thenIsValidReturnsFalse() {
+        Complaint complaintWithoutDescription = Complaint.builder()
+                .withTitle("Defekte Straßenlaterne")
+                .withLocation("Hauptstraße 123")
+                // missing description
+                .build();
+
+        assertFalse(complaintWithoutDescription.isValid());
+    }
+
 }
