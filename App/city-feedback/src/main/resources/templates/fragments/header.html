@@ -32,11 +32,14 @@
                               <li><a class="dropdown-item" href="#">Hotels</a></li>
                           </ul>
                       </li>
-                      <li class="nav-item">
+                      <li class="nav-item" th:if="${currentUser == null}">
                           <a class="nav-link" th:href="@{/sign-in}">Anmelden</a>
                       </li>
-                      <li class="nav-item">
-                          <a class="nav-link disabled">Disabled</a>
+                      <li class="nav-item" th:if="${currentUser}">
+                          <a class="nav-link" th:href="@{/logout}">Ausloggen</a>
+                      </li>
+                      <li class="nav-item" th:if="${currentUser}">
+                          <label class="nav-link">Hallo <span th:text="${currentUser.firstName}">Nutzer</span> 😀</label>
                       </li>
                   </ul>
                   <form class="d-flex" role="search">

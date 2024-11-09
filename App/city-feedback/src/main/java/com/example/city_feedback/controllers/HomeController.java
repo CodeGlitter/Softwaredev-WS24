@@ -13,4 +13,13 @@ public class HomeController {
     public String home() {
         return  "index";
     }
+
+    /*
+     * Handler method to handle sign-in request
+     * http://localhost:8080/sign-in
+     * */
+    @GetMapping("/sign-in")
+    public String signIn() {
+        return  "sign-in";
+    }
 }

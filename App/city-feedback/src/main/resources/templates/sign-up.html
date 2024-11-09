@@ -9,8 +9,64 @@
 </head>
 <body>
     <section layout:fragment="content">
-        <div style="margin-top: 5rem;">
-            <h1>Meine erste Registrierung</h1>
+        <div style="margin-top: 5rem; margin-bottom: 10rem">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+
+                        <!-- success message -->
+                        <div th:if="${param.success}">
+                            <div class="alert alert-info">Sie haben sich erfolgreich auf unserer großartigen CityFeedback-Plattform registriert! 😁</div>
+                        </div>
+
+                        <!-- error message -->
+                        <div th:if="${error}">
+                            <div class="alert alert-danger" th:text="${error}">Fehler</div>
+                        </div>
+
+                        <h1 class="mb-3">Registrierung</h1>
+
+                        <form th:action="@{/sign-up}" method="post" th:object="${user}">
+                            <div class="form-group mt-2">
+                                <label class="control-label fw-semibold" for="firstName"> Vorname </label>
+                                <label class="text-danger">*</label>
+                                <input id="firstName" class="form-control" th:field="*{firstName}" required autofocus="autofocus" />
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label class="control-label fw-semibold" for="lastName"> Nachname </label>
+                                <label class="text-danger">*</label>
+                                <input id="lastName" class="form-control" th:field="*{lastName}" required autofocus="autofocus" />
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label class="control-label fw-semibold" for="email"> E-Mail </label>
+                                <label class="text-danger">*</label>
+                                <input id="email" class="form-control" th:field="*{email}" required autofocus="autofocus" placeholder="name@example.com" />
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label class="control-label fw-semibold" for="phone"> Telefonnummer </label>
+                                <input id="phone" class="form-control" th:field="*{phone}" autofocus="autofocus" />
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label class="control-label fw-semibold" for="password"> Passwort </label>
+                                <label class="text-danger">*</label>
+                                <input id="password" class="form-control" type="password" th:field="*{password}" required autofocus="autofocus" />
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Ihr Passwort muss 8-20 Zeichen lang sein, Buchstaben und Zahlen enthalten und darf keine Leerzeichen, Sonderzeichen oder Emoji enthalten.
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-primary">Registrieren</button>
+                                <span>Du hast bereits ein Konto? <a href="/" th:href="@{/sign-in}">Anmelden</a></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </body>

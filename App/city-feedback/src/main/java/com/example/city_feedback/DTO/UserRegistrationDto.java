@@ -1,51 +1,23 @@
-package com.example.city_feedback.domain;
+package com.example.city_feedback.DTO;
 
-import jakarta.persistence.*;
+public class UserRegistrationDto {
 
-import java.util.Date;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private String password;
 
-@Entity
-@Table(name = "USERS")
-public class User {
-    @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    public long id;
+    public UserRegistrationDto() {}
 
-    public String firstName;
-
-    public String lastName;
-
-    @Column(unique = true, nullable = false)
-    public String email;
-
-    @Column(unique = true)
-    public String phone;
-
-    @Column(nullable = false)
-    public String password;
-
-
-    public User() {
-
-    }
-
-    public User(String firstName, String lastName, String email, String phone, String password) {
-        super();
+    public UserRegistrationDto(String firstName, String lastName, String email, String phone, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
         this.phone = phone;
+        this.password = password;
     }
 
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getFirstName() {
         return firstName;
