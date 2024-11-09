@@ -1,8 +1,10 @@
 package com.example.city_feedback.services;
 
 import com.example.city_feedback.DTO.UserRegistrationDto;
+import com.example.city_feedback.Exceptions.InvalidInputException;
 import com.example.city_feedback.domain.User;
 import com.example.city_feedback.repositories.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +33,11 @@ public class AuthenticationService implements UserService {
      * @return The new User object that was saved to the database.
      */
     @Override
-    public User save(UserRegistrationDto signUpDto) {
+    public User save(UserRegistrationDto signUpDto) throws InvalidInputException {
+        this.validateEmail(signUpDto.getEmail());
+        this.validatePhone(signUpDto.getPhone());
+        this.validatePassword(signUpDto.getPassword());
+
         User user = new User(
             signUpDto.getFirstName(),
             signUpDto.getLastName(),
@@ -40,6 +46,27 @@ public class AuthenticationService implements UserService {
             passwordEncoder.encode(signUpDto.getPassword()));
 
         return userRepository.save(user);
+    }
+
+    private void validateEmail(String email) throws InvalidInputException {
+        if (userRepository.findByEmail(email) != null) {
+            throw new InvalidInputException("E-Mail bereits in Gebrauch");
+        }
+        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new InvalidInputException("Ungültige E-Mail Adresse");
+        }
+    }
+
+    private void validatePhone(String phone) throws InvalidInputException {
+        if (!phone.matches("^(\\+\\d{1,3}[- ]?)?\\d{7,15}$|^$")) {
+            throw new InvalidInputException("Ungültige Telefonnummer");
+        }
+    }
+
+    private void validatePassword(String password) throws  InvalidInputException {
+        if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$")) {
+            throw new InvalidInputException("Ungültiges Passwort");
+        }
     }
 
     /**

@@ -19,6 +19,11 @@
                             <div class="alert alert-info">Sie haben sich erfolgreich auf unserer großartigen CityFeedback-Plattform registriert! 😁</div>
                         </div>
 
+                        <!-- error message -->
+                        <div th:if="${error}">
+                            <div class="alert alert-danger" th:text="${error}">Fehler</div>
+                        </div>
+
                         <h1 class="mb-3">Registrierung</h1>
 
                         <form th:action="@{/sign-up}" method="post" th:object="${user}">
@@ -49,6 +54,9 @@
                                 <label class="control-label fw-semibold" for="password"> Passwort </label>
                                 <label class="color-red">*</label>
                                 <input id="password" class="form-control" type="password" th:field="*{password}" required autofocus="autofocus" />
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Ihr Passwort muss 8-20 Zeichen lang sein, Buchstaben und Zahlen enthalten und darf keine Leerzeichen, Sonderzeichen oder Emoji enthalten.
+                                </div>
                             </div>
 
                             <div class="form-group mt-4">

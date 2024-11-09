@@ -49,6 +49,7 @@ public class SecurityConfig {
             )
             .formLogin((form) -> form
                 .loginPage("/sign-in")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
             )
             .logout((logout) -> logout

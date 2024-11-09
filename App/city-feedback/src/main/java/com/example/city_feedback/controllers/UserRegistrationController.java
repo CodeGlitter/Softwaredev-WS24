@@ -1,8 +1,10 @@
 package com.example.city_feedback.controllers;
 
 import com.example.city_feedback.DTO.UserRegistrationDto;
+import com.example.city_feedback.Exceptions.InvalidInputException;
 import com.example.city_feedback.services.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +30,14 @@ public class UserRegistrationController {
     }
 
     @PostMapping
-    public String registerUserAccount(@ModelAttribute("user") UserRegistrationDto userRegistrationDto) {
-        userService.save(userRegistrationDto);
-        return "redirect:/sign-up?success";
+    public String registerUserAccount(@ModelAttribute("user") UserRegistrationDto userRegistrationDto, Model model) throws InvalidInputException {
+        try {
+            userService.save(userRegistrationDto);
+            return "redirect:/sign-up?success";
+        } catch (InvalidInputException e) {
+            model.addAttribute("error", e.getMessage());
+            return "sign-up";
+        }
     }
 
 }
