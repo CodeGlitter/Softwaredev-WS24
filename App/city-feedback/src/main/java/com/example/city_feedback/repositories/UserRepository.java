@@ -1,22 +1,15 @@
 package com.example.city_feedback.repositories;
 
 import com.example.city_feedback.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public class UserRepository {
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    public User findById(int id) {
-        return null;
-    }
+    User findByEmail(String email);
 
-    public User[] findByName(String name) {
-        return null;
-    }
+    User findByPhone(String phone);
 
-    public User[] findAll() {
-        return null;
-    }
-
-    public void save(User user) {
-
-    }
+    User findByEmailAndPassword(String email, String password);
 }
