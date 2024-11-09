@@ -39,6 +39,14 @@ Herausfordernd waren die initiale Planung und die konsequente Disziplin, TDD und
 
 # Task 7 - Einsatz von Large Language Models (LLM)
 
+## Zusammenfassung zu Copilot (Anderson)
+Für die Unterstützung beim Debugging und der Optimierung meines Codes habe ich mich für GitHub Copilot entschieden, da es für Studierende eine kostenlose Version bietet und sich nahtlos in meine IntelliJ-IDE integrieren lässt. GitHub Copilot unterstützt mich durch Echtzeit-Optimierungsvorschläge direkt während der Code-Eingabe. Diese Integration ermöglicht eine kontinuierliche Verbesserung meines Codes und spart Zeit, indem es gezielte Vorschläge für effizientere Algorithmen oder bessere Code-Strukturen bietet. 
+
+Zu den nützlichen Funktionen gehören verschiedene Aktionen, die durch einen Rechtsklick auf Codeblöcke verfügbar sind, wie etwa Code Refactoring, Generate Test, Generate Doc, Explain this, Fix this, und Inline Chat. Diese Optionen ermöglichen eine präzise, kontextsensitive Unterstützung, die nicht nur Optimierungsvorschläge, sondern auch automatisch generierte Tests und Dokumentationen umfasst. Die Funktion "Explain this" ist besonders hilfreich, da sie komplexe Codeabschnitte aufschlüsselt und mir einen besseren Einblick in Optimierungsmöglichkeiten oder Fehlerquellen gibt. Mit "Fix this" kann ich zudem gezielt auf Fehler eingehen, die Copilot erkennt, und es bietet automatisch Vorschläge für mögliche Korrekturen.
+
+Da Copilot auf mein gesamtes Projekt Zugriff hat, analysiert es den Code umfassend und reagiert gezielt auf die Strukturen und Abhängigkeiten innerhalb des Projekts. Bei der Überprüfung von Pull Requests unterstützt es außerdem dabei, unverständlichen oder komplexen Code schnell zu erklären und vereinfacht so die Code-Reviews.
+
+
 ## Debugging-Unterstützung
 
 ## Optimierungen
