@@ -2,6 +2,7 @@ package com.example.city_feedback;
 
 import com.example.city_feedback.DTO.UserRegistrationDto;
 import com.example.city_feedback.controllers.UserRegistrationController;
+import com.example.city_feedback.repositories.UserRepository;
 import com.example.city_feedback.services.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ public class UserRegistrationControllerTest {
      */
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private UserRepository userRepository;
 
     @Test
     @DisplayName("Should display the registration form on GET /sign-up")
