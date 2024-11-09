@@ -1,9 +1,14 @@
-package com.example.city_feedback;
+package com.example.city_feedback.services;
+
+import java.util.function.Predicate;
 
 /**
  * Validator class for complaints in the city feedback system.
- * This class handles validation of complaint data to ensure all submitted complaints
- * meet the required format and content standards.
+ *
+ * This class centralizes validation logic for complaint fields, ensuring that
+ * fields such as title, description, and location comply with specified format,
+ * length, and content constraints. By consolidating validation, it promotes code
+ * consistency and maintainability across the application.
  */
 public class ComplaintValidator {
 
@@ -17,6 +22,9 @@ public class ComplaintValidator {
     private static final int MIN_DESCRIPTION_LENGTH = 10;   // Ensures some meaningful detail is provided
     private static final int MAX_DESCRIPTION_LENGTH = 1000; // Prevents overly long descriptions
 
+    // Advanced Java Feature: Lambda for input validation
+    private static final Predicate<String> isNotEmpty = str -> str != null && !str.trim().isEmpty();
+
     /**
      * Validates the title of a complaint.
      *
@@ -24,13 +32,12 @@ public class ComplaintValidator {
      * @return true if the title is valid, false otherwise
      *
      * Validation rules:
-     * - Must not be null
-     * - Must not be empty or only whitespace
+     * - Must not be null or empty
      * - Must be between MIN_TITLE_LENGTH and MAX_TITLE_LENGTH characters after trimming
      */
     public boolean isValidTitle(String title) {
         // First check if title exists and isn't empty
-        if (title == null || title.trim().isEmpty()) {
+        if (!isNotEmpty.test(title)) {
             return false;
         }
         // Remove leading/trailing whitespace and check length
@@ -46,13 +53,12 @@ public class ComplaintValidator {
      * @return true if the location format is valid, false otherwise
      *
      * Validation rules:
-     * - Must not be null
-     * - Must not be empty or only whitespace
+     * - Must not be null or empty
      * - Must contain only valid characters for German addresses
      * - Accepts letters (including umlauts), numbers, spaces, and common punctuation
      */
     public boolean isValidLocation(String location) {
-        if (location == null || location.trim().isEmpty()) {
+        if (!isNotEmpty.test(location)) {
             return false;
         }
         // Regex explanation:
@@ -71,14 +77,13 @@ public class ComplaintValidator {
      * @return true if the description is valid, false otherwise
      *
      * Validation rules:
-     * - Must not be null
-     * - Must not be empty or only whitespace
+     * - Must not be null or empty
      * - Must be between MIN_DESCRIPTION_LENGTH and MAX_DESCRIPTION_LENGTH characters after trimming
      * - Length restrictions ensure adequate detail while preventing overly long submissions
      */
     public boolean isValidDescription(String description) {
         // Check for null or empty description
-        if (description == null || description.trim().isEmpty()) {
+        if (!isNotEmpty.test(description)) {
             return false;
         }
         // Remove leading/trailing whitespace and check length
