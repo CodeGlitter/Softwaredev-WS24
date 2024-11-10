@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title layout:fragment="title">CityFeedback</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="container" style="margin-top: 5rem;">
+            <div>
+                <h1>Willkommen bei CityFeedback</h1>
+                <h5>Eine Plattform, auf der Bürger Anliegen oder Beschwerden an die Stadtverwaltung richten und deren Bearbeitungsfortschritt verfolgen können.</h5>
+            </div>
+
+            <div class="mt-5">
+                <h3>Links</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <a th:href="@{/complaint}">Alle Beschwerden</a><br>
+                        <a href="#">Anmelden</a><br>
+                        <a href="#">Registrieren</a><br>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</body>
+</html>
