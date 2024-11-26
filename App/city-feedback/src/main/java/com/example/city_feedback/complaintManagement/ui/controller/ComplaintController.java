@@ -1,4 +1,4 @@
-package com.example.city_feedback.controllers;
+package com.example.city_feedback.complaintManagement.ui.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,7 @@
 package com.example.city_feedback;
 
-import com.example.city_feedback.DTO.UserRegistrationDto;
-import com.example.city_feedback.Exceptions.InvalidInputException;
+import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
+import com.example.city_feedback.authentication.exceptions.InvalidInputException;
 import com.example.city_feedback.domain.User;
 import com.example.city_feedback.repositories.UserRepository;
 import com.example.city_feedback.services.AuthenticationService;

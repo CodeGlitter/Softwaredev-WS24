@@ -1,4 +1,4 @@
-package com.example.city_feedback.DTO;
+package com.example.city_feedback.authentication.application.dto;
 
 public class UserRegistrationDto {
 

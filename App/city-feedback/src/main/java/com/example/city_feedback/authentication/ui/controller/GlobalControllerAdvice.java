@@ -1,4 +1,4 @@
-package com.example.city_feedback.controllers;
+package com.example.city_feedback.authentication.ui.controller;
 
 import com.example.city_feedback.domain.User;
 import com.example.city_feedback.repositories.UserRepository;

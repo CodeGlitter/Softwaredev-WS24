@@ -1,7 +1,7 @@
 package com.example.city_feedback;
 
-import com.example.city_feedback.DTO.UserRegistrationDto;
-import com.example.city_feedback.controllers.UserRegistrationController;
+import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
+import com.example.city_feedback.authentication.ui.controller.UserRegistrationController;
 import com.example.city_feedback.repositories.UserRepository;
 import com.example.city_feedback.services.UserService;
 import org.junit.jupiter.api.DisplayName;
