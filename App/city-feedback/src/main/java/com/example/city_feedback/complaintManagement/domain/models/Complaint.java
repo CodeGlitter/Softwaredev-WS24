@@ -1,8 +1,9 @@
-package com.example.city_feedback.domain;
+package com.example.city_feedback.complaintManagement.domain.models;
 
 import java.time.LocalDateTime;
-import java.util.function.Predicate;
-import com.example.city_feedback.services.ComplaintValidator;
+
+import com.example.city_feedback.progressManagement.domain.models.ComplaintProgress;
+import com.example.city_feedback.complaintManagement.application.services.ComplaintValidator;
 
 /**
  * Domain entity representing a complaint in the city feedback system.

@@ -1,9 +1,9 @@
-package com.example.city_feedback.services;
+package com.example.city_feedback.authentication.application.services;
 
 import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
 import com.example.city_feedback.authentication.exceptions.InvalidInputException;
-import com.example.city_feedback.domain.User;
-import com.example.city_feedback.repositories.UserRepository;
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;

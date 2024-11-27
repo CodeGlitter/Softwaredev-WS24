@@ -1,9 +1,9 @@
-package com.example.city_feedback;
+package com.example.city_feedback.authentication.ui;
 
 import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
 import com.example.city_feedback.authentication.ui.controller.UserRegistrationController;
-import com.example.city_feedback.repositories.UserRepository;
-import com.example.city_feedback.services.UserService;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
+import com.example.city_feedback.authentication.application.services.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

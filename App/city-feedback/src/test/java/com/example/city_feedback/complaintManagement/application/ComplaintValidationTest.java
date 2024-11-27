@@ -1,9 +1,9 @@
-package com.example.city_feedback;
+package com.example.city_feedback.complaintManagement.application;
 
-import com.example.city_feedback.services.ComplaintValidator;
+import com.example.city_feedback.complaintManagement.application.services.ComplaintValidator;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import com.example.city_feedback.domain.Complaint;
+import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 
 /**
  * Test class for ComplaintValidator.

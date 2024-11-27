@@ -1,8 +1,6 @@
-package com.example.city_feedback.domain;
+package com.example.city_feedback.authentication.domain.models;
 
 import jakarta.persistence.*;
-
-import java.util.Date;
 
 @Entity
 @Table(name = "USERS")

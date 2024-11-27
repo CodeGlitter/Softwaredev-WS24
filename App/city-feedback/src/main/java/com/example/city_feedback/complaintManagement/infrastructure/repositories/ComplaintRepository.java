@@ -1,6 +1,6 @@
-package com.example.city_feedback.repositories;
+package com.example.city_feedback.complaintManagement.infrastructure.repositories;
 
-import com.example.city_feedback.domain.Complaint;
+import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 
 public class ComplaintRepository {
 

@@ -1,4 +1,4 @@
-package com.example.city_feedback.config;
+package com.example.city_feedback.authentication.application.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

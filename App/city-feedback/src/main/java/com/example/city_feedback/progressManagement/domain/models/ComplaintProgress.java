@@ -1,4 +1,4 @@
-package com.example.city_feedback.domain;
+package com.example.city_feedback.progressManagement.domain.models;
 
 import java.util.Date;
 

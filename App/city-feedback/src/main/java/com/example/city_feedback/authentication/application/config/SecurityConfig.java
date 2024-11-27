@@ -1,6 +1,6 @@
-package com.example.city_feedback.config;
+package com.example.city_feedback.authentication.application.config;
 
-import com.example.city_feedback.services.UserService;
+import com.example.city_feedback.authentication.application.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

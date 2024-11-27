@@ -1,7 +1,7 @@
 package com.example.city_feedback.authentication.ui.controller;
 
-import com.example.city_feedback.domain.User;
-import com.example.city_feedback.repositories.UserRepository;
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

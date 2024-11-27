@@ -2,7 +2,7 @@ package com.example.city_feedback.authentication.ui.controller;
 
 import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
 import com.example.city_feedback.authentication.exceptions.InvalidInputException;
-import com.example.city_feedback.services.UserService;
+import com.example.city_feedback.authentication.application.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
