@@ -2,17 +2,17 @@ package com.example.city_feedback.complaintManagement.infrastructure.repositorie
 
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 
-public class ComplaintRepository {
+import java.util.List;
+import java.util.Optional;
 
-    public Complaint findComplaintById(int id) {
-        return null;
-    }
+public interface ComplaintRepository {
+    Complaint save(Complaint complaint);
 
-    public Complaint[] findComplaintByTitleOrDescription(String text) {
-        return null;
-    }
+    Optional<Complaint> findById(Long id);
 
-    public  void saveComplaint(Complaint complaint) {
+    List<Complaint> findAll();
 
-    }
+    List<Complaint> findByTitleContaining(String title);
+
+    List<Complaint> findByLocationCity(String city);
 }
