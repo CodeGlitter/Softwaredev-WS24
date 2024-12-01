@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title layout:fragment="title">Beschwerdeliste</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="container" style="margin-top: 5rem;">
+    <h1>Beschwerdeliste</h1>
+
+    <a th:href="@{/complaints/create-complaint}" class="btn btn-primary mb-3">Neue Beschwerde erstellen</a>
+
+    <!-- Success message -->
+    <div th:if="${successMessage}" class="alert alert-success">
+      <p th:text="${successMessage}"></p>
+    </div>
+
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>Titel</th>
+        <th>Beschreibung</th>
+        <th>Standort</th>
+        <th>Erstellungsdatum</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="complaint : ${complaints}">
+        <td th:text="${complaint.title}"></td>
+        <td th:text="${complaint.description}"></td>
+        <td th:text="${complaint.location}"></td>
+        <td th:text="${complaint.createdAt}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</body>
+</html>
