@@ -1,14 +1,22 @@
 package com.example.city_feedback.authentication.application.services;
 
 import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
+import com.example.city_feedback.authentication.domain.models.Role;
 import com.example.city_feedback.authentication.exceptions.InvalidInputException;
 import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.RoleRepository;
 import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -16,11 +24,13 @@ public class AuthenticationService implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder  passwordEncoder;
+    private final RoleRepository roleRepository;
 
 
-    public AuthenticationService(UserRepository userRepository, PasswordEncoder  passwordEncoder) {
+    public AuthenticationService(UserRepository userRepository, PasswordEncoder  passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -37,12 +47,17 @@ public class AuthenticationService implements UserService {
         this.validatePhone(signUpDto.getPhone());
         this.validatePassword(signUpDto.getPassword());
 
+        // Retrieve the existing role from the database
+        Role role = roleRepository.findByName("Bürger")
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+
         User user = new User(
             signUpDto.getFirstName(),
             signUpDto.getLastName(),
             signUpDto.getEmail(),
             signUpDto.getPhone(),
-            passwordEncoder.encode(signUpDto.getPassword()));
+            passwordEncoder.encode(signUpDto.getPassword()),
+            List.of(role));
 
         return userRepository.save(user);
     }
@@ -89,8 +104,20 @@ public class AuthenticationService implements UserService {
         return new org.springframework.security.core.userdetails.User(
             user.getEmail(),
             user.getPassword(),
-            Collections.emptyList()
+            mapRolesToAuthorities(user.getRoles())
         );
+    }
+
+    /**
+     * Maps a collection of Role objects to a collection of GrantedAuthority objects.
+     * This method is used to convert the roles assigned to a user into authorities
+     * that can be recognized by Spring Security.
+     *
+     * @param roles the collection of Role objects to be mapped
+     * @return a collection of GrantedAuthority objects corresponding to the roles
+     */
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles){
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
     
 }

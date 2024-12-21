@@ -2,24 +2,58 @@ package com.example.city_feedback.complaintManagement.domain.models;
 
 import java.time.LocalDateTime;
 
+import com.example.city_feedback.authentication.domain.models.User;
 import com.example.city_feedback.progressManagement.domain.models.ComplaintProgress;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
+import jakarta.persistence.*;
 
 /**
  * Domain entity representing a complaint in the city feedback system.
- *
  * The Complaint class encapsulates details about a complaint, including the
  * title, description, and location, along with the timestamp of creation. The
  * validation logic is delegated to the ComplaintValidator to ensure that
  * complaints meet required standards before creation.
  */
+@Entity
+@Table(name = "complaints")
 public class Complaint {
+
+    @Id
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "complaint_progress_id", nullable = false)
     private ComplaintProgress progress;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id", nullable = false)
     private Location location;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id", nullable = false)
+    private User creator;
+
+
+    @Column(nullable = false)
     private final LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     public Complaint() {
         this.createdAt = LocalDateTime.now();
@@ -129,5 +163,11 @@ public class Complaint {
         return progress;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

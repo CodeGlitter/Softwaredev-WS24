@@ -1,17 +1,39 @@
 package com.example.city_feedback.complaintManagement.domain.valueObjects;
+import com.example.city_feedback.complaintManagement.domain.models.Complaint;
+import jakarta.persistence.*;
+
+import java.util.Collection;
 import java.util.regex.Pattern;
 
+@Entity
+@Table(name = "locations")
 public class Location {
-    private final String street;
-    private final String houseNumber;
-    private final String postalCode;
-    private final String city;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String street;
+
+    private String houseNumber;
+
+    private String postalCode;
+
+    private String city;
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<Complaint> complaints;
+
 
     // Validation patterns
     private static final Pattern STREET_PATTERN = Pattern.compile("^[A-Za-zäöüÄÖÜß\\s.]+$");
     private static final Pattern HOUSE_NUMBER_PATTERN = Pattern.compile("^[0-9]+[a-zA-Z-]*$");
     private static final Pattern POSTAL_CODE_PATTERN = Pattern.compile("^[0-9]{5}$");
     private static final Pattern CITY_PATTERN = Pattern.compile("^[A-Za-zäöüÄÖÜß\\s]+$");
+
+    public Location() {
+
+    }
 
     public Location(String street, String houseNumber, String postalCode, String city) {
         if (!isValidStreet(street)) {
