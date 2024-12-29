@@ -6,6 +6,7 @@ import com.example.city_feedback.authentication.exceptions.InvalidInputException
 import com.example.city_feedback.authentication.domain.models.User;
 import com.example.city_feedback.authentication.infrastructure.repositories.RoleRepository;
 import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,12 +25,14 @@ public class AuthenticationService implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder  passwordEncoder;
     private final RoleRepository roleRepository;
+    private final HttpSession session;
 
 
-    public AuthenticationService(UserRepository userRepository, PasswordEncoder  passwordEncoder, RoleRepository roleRepository) {
+    public AuthenticationService(UserRepository userRepository, PasswordEncoder  passwordEncoder, RoleRepository roleRepository, HttpSession session) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.session = session;
     }
 
     /**
@@ -96,6 +98,9 @@ public class AuthenticationService implements UserService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        String isEmployee = (String) session.getAttribute("isEmployee");
+        System.out.println("loadUserByUsername isEmployee: " + isEmployee);
+
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");

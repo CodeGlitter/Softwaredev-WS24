@@ -33,7 +33,7 @@
                           </ul>
                       </li>
                       <li class="nav-item" th:if="${currentUser == null}">
-                          <a class="nav-link" th:href="@{/sign-in}">Anmelden</a>
+                          <a class="nav-link" th:href="@{/sign-in(employee='NO')}">Anmelden</a>
                       </li>
                       <li class="nav-item" th:if="${currentUser}">
                           <a class="nav-link" th:href="@{/logout}">Ausloggen</a>
