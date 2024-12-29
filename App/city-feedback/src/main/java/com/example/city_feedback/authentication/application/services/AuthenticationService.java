@@ -99,12 +99,18 @@ public class AuthenticationService implements UserService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         String isEmployee = (String) session.getAttribute("isEmployee");
-        System.out.println("loadUserByUsername isEmployee: " + isEmployee);
+        String role = "Bürger";
 
-        User user = userRepository.findByEmail(email);
+        if ("YES".equalsIgnoreCase(isEmployee)) {
+            role = "Mitarbeiter";
+        }
+
+        User user = userRepository.findByEmailAndRole(email, role);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
+
+        session.setAttribute("currentRole", role);
 
         return new org.springframework.security.core.userdetails.User(
             user.getEmail(),
