@@ -28,6 +28,14 @@
                 <textarea id="description" class="form-control" th:field="*{description}" placeholder="Beschwerdebeschreibung eingeben" required></textarea>
             </div>
 
+            <div class="form-group mt-2">
+                <label for="category">Kategorie</label>
+                <select id="category" class="form-control" th:field="*{categoryId}" required>
+                    <option value="" disabled selected>Bitte Kategorie auswählen</option>
+                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                </select>
+            </div>
+
             <h5 class="mt-4">Standortinformationen</h5>
 
             <div class="form-group mt-2">

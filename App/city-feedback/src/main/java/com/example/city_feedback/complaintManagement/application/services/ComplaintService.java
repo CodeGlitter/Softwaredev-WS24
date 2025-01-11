@@ -3,8 +3,10 @@ package com.example.city_feedback.complaintManagement.application.services;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
+import com.example.city_feedback.complaintManagement.domain.models.Category;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -18,14 +20,16 @@ import java.util.stream.Collectors;
 @Service
 public class ComplaintService {
     private final ComplaintRepository complaintRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * Constructs a new {@code ComplaintService} with the provided repository.
      *
      * @param complaintRepository the repository to handle complaint data
      */
-    public ComplaintService(ComplaintRepository complaintRepository) {
+    public ComplaintService(ComplaintRepository complaintRepository, CategoryRepository categoryRepository) {
         this.complaintRepository = complaintRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -35,6 +39,11 @@ public class ComplaintService {
      * @return the created {@code Complaint} object
      */
     public Complaint createComplaint(CreateComplaintCommand command) {
+
+        if (command.getCategoryId() == null) {
+            throw new IllegalArgumentException("Kategorie muss angegeben werden");
+        }
+
         // Convert flat fields from CreateComplaintCommand into a Location object
         Location location = new Location(
                 command.getStreet(),
@@ -43,10 +52,15 @@ public class ComplaintService {
                 command.getCity()
         );
 
+        // Fetch the Category from the repository
+        Category category = categoryRepository.findById(command.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+
         Complaint complaint = Complaint.builder()
                 .withTitle(command.getTitle())
                 .withDescription(command.getDescription())
                 .withLocation(location)
+                .withCategory(category)
                 .build();
 
         return complaintRepository.save(complaint);
@@ -65,7 +79,8 @@ public class ComplaintService {
                         complaint.getTitle(),
                         complaint.getDescription(),
                         complaint.getLocation().toString(),
-                        complaint.getCreatedAt().format(formatter)))
+                        complaint.getCreatedAt().format(formatter),
+                        complaint.getCategory() != null ? complaint.getCategory().getId() : 0))
                 .collect(Collectors.toList());
     }
 }

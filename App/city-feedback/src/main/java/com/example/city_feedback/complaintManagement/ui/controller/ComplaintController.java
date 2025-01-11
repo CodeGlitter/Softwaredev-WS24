@@ -1,10 +1,14 @@
 package com.example.city_feedback.complaintManagement.ui.controller;
+import com.example.city_feedback.complaintManagement.application.dto.CategoryDto;
 
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
+import com.example.city_feedback.complaintManagement.application.services.CategoryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Handles web requests related to complaints in the City Feedback system.
@@ -15,15 +19,18 @@ import org.springframework.web.bind.annotation.*;
 public class ComplaintController {
 
     private final ComplaintService complaintService;
+    private final CategoryService categoryService;
 
     /**
      * Constructs a new {@code ComplaintController} with the provided service.
      *
      * @param complaintService the service to handle complaint operations
      */
-    public ComplaintController(ComplaintService complaintService) {
+    public ComplaintController(ComplaintService complaintService, CategoryService categoryService) {
         this.complaintService = complaintService;
+        this.categoryService = categoryService;
     }
+
 
     /**
      * Displays a list of all complaints.
@@ -49,7 +56,8 @@ public class ComplaintController {
      */
     @GetMapping("/create-complaint")
     public String showComplaintForm(Model model) {
-        model.addAttribute("complaint", new CreateComplaintCommand("", "", "", "", "", ""));
+        model.addAttribute("complaint", new CreateComplaintCommand("", "", "", "", "", "", null));
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "complaintManagement/create-complaint";
     }
 
@@ -69,5 +77,16 @@ public class ComplaintController {
             model.addAttribute("error", e.getMessage());
             return "complaintManagement/create-complaint"; // Returns to the form in case of error
         }
+    }
+
+    /**
+     * Returns a list of all categories.
+     *
+     * @return a list of {@code CategoryDto} objects
+     */
+    @GetMapping("/categories")
+    @ResponseBody
+    public List<CategoryDto> getAllCategories() {
+        return categoryService.getAllCategories(); // Use the injected CategoryService
     }
 }

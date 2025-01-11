@@ -114,6 +114,11 @@
 					<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.9.1.2184</version> <!-- Latest version as of now -->
+			</plugin>
 		</plugins>
 	</build>
 

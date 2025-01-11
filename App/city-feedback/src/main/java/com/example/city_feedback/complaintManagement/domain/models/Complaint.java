@@ -77,6 +77,7 @@ public class Complaint {
         private String title;
         private String description;
         private Location location;
+        private Category category;
 
         public ComplaintBuilder withTitle(String title) {
             this.title = title;
@@ -93,22 +94,41 @@ public class Complaint {
             return this;
         }
 
+        public ComplaintBuilder withCategory(Category category) {
+            this.category = category;
+            return this;
+        }
+
         /**
          * Builds and validates the Complaint object.
          *
          * @return a valid Complaint object
          */
         public Complaint build() {
+            validateFields();
+
             Complaint complaint = new Complaint();
             complaint.title = title;
             complaint.description = description;
             complaint.location = location;
-
-            if (!complaint.isValid()) {
-                throw new IllegalArgumentException("Complaint fields are invalid.");
-            }
+            complaint.category = category;
 
             return complaint;
+        }
+
+        /**
+         * Validates the fields of the complaint before building.
+         */
+        private void validateFields() {
+            if (title == null || title.length() < 5 || title.length() > 100) {
+                throw new IllegalArgumentException("Titel bitte 5-10 Zeichen.");
+            }
+            if (description == null || description.length() < 10 || description.length() > 1000) {
+                throw new IllegalArgumentException("Beschreibung bitte 10-1000 Zeichen.");
+            }
+            if (location == null) {
+                throw new IllegalArgumentException("Standortinformationen sind Pflichtfelder.");
+            }
         }
     }
 
@@ -169,5 +189,13 @@ public class Complaint {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

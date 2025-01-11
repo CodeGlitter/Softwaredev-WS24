@@ -10,7 +10,7 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String name;
 
@@ -25,6 +25,9 @@ public class Category {
 
     public Category(String name) {
         this.name = name;
+    }
+
+    public Category(String name, String description, Integer id) {
     }
 
     public int getId() {

@@ -37,16 +37,16 @@ public class Location {
 
     public Location(String street, String houseNumber, String postalCode, String city) {
         if (!isValidStreet(street)) {
-            throw new IllegalArgumentException("Invalid street name.");
+            throw new IllegalArgumentException("Ungültige Straße");
         }
         if (!isValidHouseNumber(houseNumber)) {
-            throw new IllegalArgumentException("Invalid house number.");
+            throw new IllegalArgumentException("Ungültige Hausnummer");
         }
         if (!isValidPostalCode(postalCode)) {
-            throw new IllegalArgumentException("Invalid postal code.");
+            throw new IllegalArgumentException("Ungültige PLZ");
         }
         if (!isValidCity(city)) {
-            throw new IllegalArgumentException("Invalid city name.");
+            throw new IllegalArgumentException("Ungültige Stadt");
         }
 
         this.street = street.trim();
