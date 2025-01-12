@@ -1,7 +1,6 @@
 package com.example.city_feedback.complaintManagement.domain.models;
 
 import jakarta.persistence.*;
-
 import java.util.Collection;
 
 @Entity
@@ -9,11 +8,13 @@ import java.util.Collection;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
+    @Column
     private String description;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -24,17 +25,20 @@ public class Category {
     }
 
     public Category(String name) {
-        this.name = name;
+        setName(name);
     }
 
     public Category(String name, String description, Integer id) {
+        this(name);
+        this.description = description;
+        this.id = id;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -43,6 +47,9 @@ public class Category {
     }
 
     public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be null or empty");
+        }
         this.name = name;
     }
 
@@ -52,5 +59,13 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Collection<Complaint> getComplaints() {
+        return complaints;
+    }
+
+    public void setComplaints(Collection<Complaint> complaints) {
+        this.complaints = complaints;
     }
 }

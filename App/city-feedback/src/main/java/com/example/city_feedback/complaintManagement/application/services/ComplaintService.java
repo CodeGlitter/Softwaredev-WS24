@@ -78,9 +78,10 @@ public class ComplaintService {
                 .map(complaint -> new ComplaintDto(
                         complaint.getTitle(),
                         complaint.getDescription(),
-                        complaint.getLocation().toString(),
-                        complaint.getCreatedAt().format(formatter),
-                        complaint.getCategory() != null ? complaint.getCategory().getId() : 0))
+                        complaint.getLocation() != null ? complaint.getLocation().toString() : "Unbekannter Standort",
+                        complaint.getCreatedAt() != null ? complaint.getCreatedAt().format(formatter) : "Unbekanntes Datum",
+                        complaint.getCategory() != null ? complaint.getCategory().getId() : 0,
+                        complaint.getCategory() != null ? complaint.getCategory().getName() : "Keine Kategorie"))
                 .collect(Collectors.toList());
     }
 }

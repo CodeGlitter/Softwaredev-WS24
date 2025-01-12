@@ -6,15 +6,18 @@ public class ComplaintDto {
     private String location;
     private String createdAt;
     private int categoryId;
+    private String categoryName;
 
-    public ComplaintDto(String title, String description, String location, String createdAt, int categoryId) {
+    public ComplaintDto(String title, String description, String location, String createdAt, int categoryId, String categoryName) {
         this.title = title;
         this.description = description;
         this.location = location;
         this.createdAt = createdAt;
         this.categoryId = categoryId;
+        this.categoryName = categoryName;
     }
 
+    // Getters for all fields
     public String getTitle() {
         return title;
     }
@@ -33,6 +36,10 @@ public class ComplaintDto {
 
     public int getCategoryId() {
         return categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName; // Getter for category name
     }
 
 

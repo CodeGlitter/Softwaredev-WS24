@@ -19,7 +19,7 @@ import jakarta.persistence.*;
 public class Complaint {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -40,23 +40,23 @@ public class Complaint {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "creator_id", nullable = false)
+    private Long creatorId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id", nullable = false)
-    private User creator;
-
-
-    @Column(nullable = false)
-    private final LocalDateTime createdAt;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true) // Add this if complaints belong to a user
+    private User user;
+
+
     public Complaint() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
@@ -66,6 +66,23 @@ public class Complaint {
     public static ComplaintBuilder builder() {
         return new ComplaintBuilder();
     }
+
+    /**
+     * Updates the `updatedAt` timestamp to the current time.
+     */
+    @PreUpdate
+    private void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 
     /**
      * Builder class for creating Complaint objects.
@@ -78,6 +95,8 @@ public class Complaint {
         private String description;
         private Location location;
         private Category category;
+        private User user;
+        private User creator;
 
         public ComplaintBuilder withTitle(String title) {
             this.title = title;
@@ -96,6 +115,16 @@ public class Complaint {
 
         public ComplaintBuilder withCategory(Category category) {
             this.category = category;
+            return this;
+        }
+
+        public ComplaintBuilder withUser(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public ComplaintBuilder withCreator(User creator) {
+            this.creator = creator;
             return this;
         }
 
@@ -130,6 +159,22 @@ public class Complaint {
                 throw new IllegalArgumentException("Standortinformationen sind Pflichtfelder.");
             }
         }
+
+        public User getUser() {
+            return user;
+        }
+
+        public void setUser(User user) {
+            this.user = user;
+        }
+
+        public User getCreator() {
+            return creator;
+        }
+
+        public void setCreator(User creator) {
+            this.creator = creator;
+        }
     }
 
     /**
@@ -141,6 +186,7 @@ public class Complaint {
                 description != null && description.length() >= 10 && description.length() <= 1000 &&
                 location != null && location.isValid();
     }
+
 
     // Getters for accessing complaint properties
     public Long getId() {
