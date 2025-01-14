@@ -38,6 +38,7 @@ jobs:
 
       # Step 5: Run SonarQube Analysis
       - name: Run SonarQube Scan
+        working-directory: App/city-feedback
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn sonar:sonar \
