@@ -39,8 +39,9 @@ jobs:
       # Step 5: Run SonarQube Analysis
       - name: Run SonarQube Scan
         env:
-          SONAR_TOKEN: ${{ secrets.Test_Token }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn sonar:sonar \
+          -Dsonar.branch.name=release/sonarqube \
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
           -Dsonar.organization=${{ secrets.SONAR_ORG }} \
           -Dsonar.host.url=https://sonarcloud.io \
