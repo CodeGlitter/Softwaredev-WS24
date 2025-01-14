@@ -20,15 +20,22 @@ public class CategoryService {
 
     /**
      * Retrieves all categories and converts them to DTOs.
+     * Validates that categories exist before returning the list.
      *
      * @return a list of CategoryDto objects
      */
     public List<CategoryDto> getAllCategories() {
-        return categoryRepository.findAll().stream()
+        List<CategoryDto> categories = categoryRepository.findAll().stream()
                 .map(category -> new CategoryDto(
                         category.getId(),
                         category.getName(),
                         category.getDescription()))
                 .collect(Collectors.toList());
+
+        if (categories.isEmpty()) {
+            throw new IllegalStateException("Keine Kategorien verfügbar");
+        }
+
+        return categories;
     }
 }

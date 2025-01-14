@@ -34,6 +34,11 @@ public class CreateComplaintCommand {
         this.categoryId = categoryId;
     }
 
+    public CreateComplaintCommand() {
+
+    }
+
+
     public String getTitle() {
         return title;
     }
@@ -86,7 +91,7 @@ public class CreateComplaintCommand {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 }

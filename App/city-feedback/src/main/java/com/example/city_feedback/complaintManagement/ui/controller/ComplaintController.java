@@ -56,10 +56,14 @@ public class ComplaintController {
      */
     @GetMapping("/create-complaint")
     public String showComplaintForm(Model model) {
-        model.addAttribute("complaint", new CreateComplaintCommand("", "", "", "", "", "", null));
+        // Initialize with default categoryId = 0
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setCategoryId(0); // Default value
+        model.addAttribute("complaint", command);
         model.addAttribute("categories", categoryService.getAllCategories());
         return "complaintManagement/create-complaint";
     }
+
 
     /**
      * Handles the submission of a new complaint.
@@ -68,14 +72,17 @@ public class ComplaintController {
      * @param model   the model to hold error messages, if any
      * @return a redirect to the complaints list on success, or the form view on error
      */
-    @PostMapping
+    @PostMapping("/create-complaint")
     public String createComplaint(@ModelAttribute("complaint") CreateComplaintCommand command, Model model) {
         try {
+            // Call the service to handle complaint creation
             complaintService.createComplaint(command);
-            return "redirect:/complaints?success=true"; // Redirects to the complaints list on success
+            return "redirect:/complaints?success=true";
         } catch (Exception e) {
+            // Handle errors and re-render the form
             model.addAttribute("error", e.getMessage());
-            return "complaintManagement/create-complaint"; // Returns to the form in case of error
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "complaintManagement/create-complaint";
         }
     }
 

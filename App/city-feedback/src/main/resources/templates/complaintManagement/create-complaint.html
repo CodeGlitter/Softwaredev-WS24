@@ -29,10 +29,15 @@
             </div>
 
             <div class="form-group mt-2">
-                <label for="category">Kategorie</label>
-                <select id="category" class="form-control" th:field="*{categoryId}" required>
-                    <option value="" disabled selected>Bitte Kategorie auswählen</option>
-                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                <select th:field="*{categoryId}" class="form-control">
+                    <!-- Default option for "Please select" -->
+                    <option value="0" th:selected="*{categoryId} == 0">Bitte wählen</option>
+                    <!-- Populate categories from the backend -->
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"
+                            th:selected="category.id == *{categoryId}">
+                    </option>
                 </select>
             </div>
 
