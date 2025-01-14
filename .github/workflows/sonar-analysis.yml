@@ -59,11 +59,3 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      # Step 7: Debug After Analysis (Only runs on failure)
-      - name: Debug After Analysis
-        if: failure()
-        run: |
-          echo "SonarQube Analysis failed. Debugging directory."
-          echo "Current Directory: $(pwd)"
-          ls -R
