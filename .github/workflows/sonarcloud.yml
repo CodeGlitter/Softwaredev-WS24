@@ -1,10 +1,17 @@
-name: SonarQube
+name: SonarQube Analysis
+
 on:
   push:
     branches:
       - main
+      - dev
+      - feature/*
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
 jobs:
   build:
     name: Build and analyze
@@ -33,4 +40,9 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=CodeGlitter_Softwaredev-WS24
+          SONAR_HOST_URL: https://sonarcloud.io
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=CodeGlitter_Softwaredev-WS24 \
+          -Dsonar.branch.name=${{ github.ref_name }} \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
