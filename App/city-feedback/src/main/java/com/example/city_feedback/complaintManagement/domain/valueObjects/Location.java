@@ -36,23 +36,31 @@ public class Location {
     }
 
     public Location(String street, String houseNumber, String postalCode, String city) {
-        if (!isValidStreet(street)) {
-            throw new IllegalArgumentException("Invalid street name.");
-        }
-        if (!isValidHouseNumber(houseNumber)) {
-            throw new IllegalArgumentException("Invalid house number.");
-        }
-        if (!isValidPostalCode(postalCode)) {
-            throw new IllegalArgumentException("Invalid postal code.");
-        }
-        if (!isValidCity(city)) {
-            throw new IllegalArgumentException("Invalid city name.");
-        }
+        this.street = validateAndTrim(street, STREET_PATTERN, "Invalid street name.");
+        this.houseNumber = validateAndTrim(houseNumber, HOUSE_NUMBER_PATTERN, "Invalid house number.");
+        this.postalCode = validateAndTrim(postalCode, POSTAL_CODE_PATTERN, "Invalid postal code.");
+        this.city = validateAndTrim(city, CITY_PATTERN, "Invalid city name.");
+    }
 
-        this.street = street.trim();
-        this.houseNumber = houseNumber.trim();
-        this.postalCode = postalCode.trim();
-        this.city = city.trim();
+    /**
+     * Validates the given value against the specified pattern and trims it.
+     * If the value does not match the pattern, an IllegalArgumentException is thrown with the provided error message.
+     *
+     * @param value the value to be validated and trimmed
+     * @param pattern the pattern to validate the value against
+     * @param errorMessage the error message to be used in the exception if validation fails
+     * @return the trimmed value if it is valid
+     * @throws IllegalArgumentException if the value does not match the pattern
+     */
+    private String validateAndTrim(String value, Pattern pattern, String errorMessage) {
+        if (!isValidField(value, pattern)) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return value.trim();
+    }
+
+    private boolean isValidField(String value, Pattern pattern) {
+        return value != null && pattern.matcher(value.trim()).matches();
     }
 
     /**
@@ -62,7 +70,7 @@ public class Location {
      * @return {@code true} if the street name is valid, {@code false} otherwise
      */
     private boolean isValidStreet(String street) {
-        return street != null && STREET_PATTERN.matcher(street.trim()).matches();
+        return isValidField(street, STREET_PATTERN);
     }
 
     /**
@@ -72,7 +80,7 @@ public class Location {
      * @return {@code true} if the house number is valid, {@code false} otherwise
      */
     private boolean isValidHouseNumber(String houseNumber) {
-        return houseNumber != null && HOUSE_NUMBER_PATTERN.matcher(houseNumber.trim()).matches();
+        return isValidField(houseNumber, HOUSE_NUMBER_PATTERN);
     }
 
     /**
@@ -82,7 +90,7 @@ public class Location {
      * @return {@code true} if the postal code is valid, {@code false} otherwise
      */
     private boolean isValidPostalCode(String postalCode) {
-        return postalCode != null && POSTAL_CODE_PATTERN.matcher(postalCode.trim()).matches();
+        return isValidField(postalCode, POSTAL_CODE_PATTERN);
     }
 
     /**
@@ -91,7 +99,7 @@ public class Location {
      * @return {@code true} if all fields are valid, {@code false} otherwise
      */
     private boolean isValidCity(String city) {
-        return city != null && CITY_PATTERN.matcher(city.trim()).matches();
+        return isValidField(city, CITY_PATTERN);
     }
 
     /**
