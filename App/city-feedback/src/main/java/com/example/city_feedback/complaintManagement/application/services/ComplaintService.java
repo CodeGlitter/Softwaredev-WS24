@@ -7,6 +7,7 @@ import com.example.city_feedback.complaintManagement.domain.models.Category;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.LocationRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final CategoryRepository categoryRepository;
+    private LocationRepository locationRepository;
 
     /**
      * Constructs a new {@code ComplaintService} with the provided repository.
@@ -40,22 +42,25 @@ public class ComplaintService {
      */
     public Complaint createComplaint(CreateComplaintCommand command) {
 
-        if (command.getCategoryId() == null) {
+        if (command.getCategoryId() == null || command.getCategoryId() <= 0) {
             throw new IllegalArgumentException("Kategorie muss angegeben werden");
         }
 
-        // Convert flat fields from CreateComplaintCommand into a Location object
-        Location location = new Location(
+        // Fetch or create the location
+        Location location = locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
                 command.getStreet(),
                 command.getHouseNumber(),
                 command.getPostalCode(),
                 command.getCity()
-        );
+        ).orElseGet(() -> locationRepository.save(
+                new Location(command.getStreet(), command.getHouseNumber(), command.getPostalCode(), command.getCity())
+        ));
 
-        // Fetch the Category from the repository
+        // Fetch the category
         Category category = categoryRepository.findById(command.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+                .orElseThrow(() -> new IllegalArgumentException("Ungültige Kategorie-ID"));
 
+        // Build and save the complaint
         Complaint complaint = Complaint.builder()
                 .withTitle(command.getTitle())
                 .withDescription(command.getDescription())

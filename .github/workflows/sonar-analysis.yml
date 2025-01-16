@@ -1,0 +1,61 @@
+name: SonarQube Analysis
+
+on:
+  workflow_dispatch: # Manual trigger
+  push:
+    branches:
+      - release/sonarqube
+
+jobs:
+  sonar-analysis:
+    name: SonarQube with JaCoCo
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Debug Directory (Verify where we are and list contents)
+      - name: Debug Directory
+        run: |
+          echo "Current Directory: $(pwd)"
+          echo "List of files in the current directory:"
+          ls -R
+
+      # Step 3: Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 4: Cache Maven dependencies
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Step 5: Build and Test with Maven
+      - name: Build and Test
+        run: |
+          cd App/city-feedback
+          echo "Running Maven Build and Tests"
+          mvn clean verify -DskipTests=false
+
+      # Step 6: Run SonarQube Analysis
+      - name: Run SonarQube Scan
+        run: |
+          cd App/city-feedback
+          echo "Running SonarQube Analysis"
+          mvn sonar:sonar \
+            -Dsonar.branch.name=release/sonarqube \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
