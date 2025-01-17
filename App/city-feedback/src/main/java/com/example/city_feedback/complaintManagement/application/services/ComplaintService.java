@@ -1,5 +1,7 @@
 package com.example.city_feedback.complaintManagement.application.services;
 
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
@@ -8,6 +10,8 @@ import com.example.city_feedback.complaintManagement.domain.valueObjects.Locatio
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.LocationRepository;
+import com.example.city_feedback.progressManagement.domain.models.ComplaintProgress;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -22,28 +26,31 @@ import java.util.stream.Collectors;
 public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final CategoryRepository categoryRepository;
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
+    private final UserRepository userRepository;
 
-    /**
-     * Constructs a new {@code ComplaintService} with the provided repository.
-     *
-     * @param complaintRepository the repository to handle complaint data
-     */
-    public ComplaintService(ComplaintRepository complaintRepository, CategoryRepository categoryRepository) {
+    public ComplaintService(ComplaintRepository complaintRepository,
+                            CategoryRepository categoryRepository,
+                            LocationRepository locationRepository,
+                            UserRepository userRepository) {
         this.complaintRepository = complaintRepository;
         this.categoryRepository = categoryRepository;
+        this.locationRepository = locationRepository;
+        this.userRepository = userRepository;
     }
 
-    /**
-     * Creates a new complaint based on the provided {@code CreateComplaintCommand}.
-     *
-     * @param command the command containing details for the new complaint
-     * @return the created {@code Complaint} object
-     */
     public Complaint createComplaint(CreateComplaintCommand command) {
+        // Validate the category first
+        Category category = categoryRepository.findById(command.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Ungültige Kategorie-ID"));
 
-        if (command.getCategoryId() == null || command.getCategoryId() <= 0) {
-            throw new IllegalArgumentException("Kategorie muss angegeben werden");
+        // Fetch the logged-in user's email from the authentication context
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Resolve the User object based on the email
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("Benutzer nicht gefunden: " + email);
         }
 
         // Fetch or create the location
@@ -56,9 +63,12 @@ public class ComplaintService {
                 new Location(command.getStreet(), command.getHouseNumber(), command.getPostalCode(), command.getCity())
         ));
 
-        // Fetch the category
-        Category category = categoryRepository.findById(command.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Ungültige Kategorie-ID"));
+        // Create a default progress object (OFFEN)
+        ComplaintProgress defaultProgress = new ComplaintProgress();
+        defaultProgress.setId(1); // Set the default dummy ID for "OFFEN"
+        defaultProgress.setStatus("Offen");
+        defaultProgress.setColor("#808080");
+        defaultProgress.setDescription("Die Beschwerde wurde erstellt, aber noch nicht bearbeitet.");
 
         // Build and save the complaint
         Complaint complaint = Complaint.builder()
@@ -66,17 +76,14 @@ public class ComplaintService {
                 .withDescription(command.getDescription())
                 .withLocation(location)
                 .withCategory(category)
+                .withUser(user)
                 .build();
+        complaint.setCreatorId(user.getId());
+        complaint.setProgress(defaultProgress); // Set the default progress
 
         return complaintRepository.save(complaint);
     }
 
-    /**
-     * Retrieves all complaints and converts them into {@code ComplaintDto} objects
-     * for simplified data representation.
-     *
-     * @return a list of {@code ComplaintDto} objects representing all complaints
-     */
     public List<ComplaintDto> findAllComplaints() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return complaintRepository.findAll().stream()

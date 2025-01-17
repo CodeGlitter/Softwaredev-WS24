@@ -13,6 +13,7 @@ public class CreateComplaintCommand {
     private String city;
     private Integer categoryId;
 
+
     /**
      * Constructs a new {@code CreateComplaintCommand}.
      *
@@ -94,4 +95,5 @@ public class CreateComplaintCommand {
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
+
 }

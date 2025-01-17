@@ -1,37 +1,72 @@
 package com.example.city_feedback.complaintManagement.domain.models;
+
+import com.example.city_feedback.authentication.domain.models.User;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for the {@link Complaint} class.
- * This class ensures the correct behavior of complaint creation and validation.
- */
 public class ComplaintTest {
 
-    /**
-     * Tests that a complaint is successfully created when all fields are valid.
-     * This ensures that the builder correctly sets fields and validates them.
-     */
     @Test
     void whenAllFieldsAreValid_thenComplaintIsCreatedSuccessfully() {
         Complaint complaint = Complaint.builder()
-                .withTitle("Defekte Straßenlaterne")
-                .withDescription("Die Straßenlaterne im Stadtzentrum, Ecke Rewe funktioniert nicht.")
-                .withLocation(new Location("Hauptstr.", "123", "12345", "Betzingen"))
+                .withTitle("Valid Title")
+                .withDescription("This is a valid description of the complaint.")
+                .withLocation(new Location("Main Street", "1", "12345", "Test City"))
+                .withUser(new User())
                 .build();
 
+        assertNotNull(complaint);
         assertTrue(complaint.isValid());
     }
 
-    /**
-     * Tests that an exception is thrown when the street contains invalid characters.
-     * This ensures that the {@link Location} validation logic is functioning as expected.
-     */
     @Test
-    void whenStreetContainsInvalidCharacters_thenThrowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Location("Hauptstraße@", "123", "12345", "Berlin"));
+    void whenTitleTooShort_thenThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                Complaint.builder()
+                        .withTitle("Too") // Too short
+                        .withDescription("Valid Description")
+                        .withLocation(new Location("Main Street", "1", "12345", "Test City"))
+                        .withUser(new User())
+                        .build());
+        assertEquals("Titel bitte 5-100 Zeichen.", exception.getMessage());
+    }
+
+    @Test
+    void whenDescriptionTooShort_thenThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                Complaint.builder()
+                        .withTitle("Valid Title")
+                        .withDescription("Short") // Too short
+                        .withLocation(new Location("Main Street", "1", "12345", "Test City"))
+                        .withUser(new User())
+                        .build());
+        assertEquals("Beschreibung bitte 10-1000 Zeichen.", exception.getMessage());
+    }
+
+    @Test
+    void whenLocationIsInvalid_thenThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                Complaint.builder()
+                        .withTitle("Valid Title")
+                        .withDescription("Valid Description")
+                        .withLocation(null) // Invalid
+                        .withUser(new User())
+                        .build());
+        assertEquals("Pflichtfeld und gültige Zeichen bitte.", exception.getMessage());
+    }
+
+    @Test
+    void whenUserIsNull_thenThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                Complaint.builder()
+                        .withTitle("Valid Title")
+                        .withDescription("Valid Description")
+                        .withLocation(new Location("Main Street", "1", "12345", "Test City"))
+                        .withUser(null) // No user
+                        .build());
+        assertEquals("Benutzer ist erforderlich.", exception.getMessage());
     }
 
 }

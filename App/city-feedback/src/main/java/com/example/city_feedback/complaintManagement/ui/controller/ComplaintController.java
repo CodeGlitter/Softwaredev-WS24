@@ -1,6 +1,9 @@
 package com.example.city_feedback.complaintManagement.ui.controller;
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.complaintManagement.application.dto.CategoryDto;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
 import com.example.city_feedback.complaintManagement.application.services.CategoryService;
@@ -85,6 +88,8 @@ public class ComplaintController {
             return "complaintManagement/create-complaint";
         }
     }
+
+
 
     /**
      * Returns a list of all categories.

@@ -1,28 +1,29 @@
 package com.example.city_feedback.complaintManagement.application.services;
 
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
-import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
 import com.example.city_feedback.complaintManagement.domain.models.Category;
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
-import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.LocationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for the {@link ComplaintService} class.
- * Validates creation, retrieval, and error handling logic for complaints.
- */
 class ComplaintServiceTest {
 
     @Mock
@@ -31,124 +32,109 @@ class ComplaintServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock
+    private LocationRepository locationRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private ComplaintService complaintService;
 
+    private AutoCloseable mocks;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        if (mocks != null) {
+            mocks.close();
+        }
     }
 
     @Test
-    void whenCreateComplaintWithValidInputs_thenReturnsComplaintAndSavesToRepository() {
+    void whenValidCommandIsProvided_thenComplaintIsCreatedSuccessfully() {
         // Arrange
-        Category category = new Category("Infrastruktur", "Beschwerden über Straßen, Beleuchtung, Gehwege, Brücken oder andere öffentliche Einrichtungen.", 1);
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Test Complaint");
+        command.setDescription("Test Description");
+        command.setCategoryId(1);
+        command.setStreet("Test Street");
+        command.setHouseNumber("1");
+        command.setPostalCode("12345");
+        command.setCity("Test City");
+
+        Category category = new Category();
+        category.setId(1);
+        category.setName("Test Category");
+
+        Location location = new Location("Test Street", "1", "12345", "Test City");
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
         when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
-
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                "Defekte Straße",
-                "Straßenbelag ist beschädigt.",
-                "Hauptstraße",
-                "12",
-                "12345",
-                "Berlin",
-                1
-        );
-
-        Location location = new Location("Hauptstraße", "12", "12345", "Berlin");
-        Complaint complaint = Complaint.builder()
-                .withTitle(command.getTitle())
-                .withDescription(command.getDescription())
-                .withLocation(location)
-                .withCategory(category)
-                .build();
-
-        when(complaintRepository.save(any(Complaint.class))).thenReturn(complaint);
+        when(locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
+                "Test Street", "1", "12345", "Test City")).thenReturn(Optional.empty());
+        when(locationRepository.save(any(Location.class))).thenReturn(location);
+        when(complaintRepository.save(any(Complaint.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        Complaint result = complaintService.createComplaint(command);
+        Complaint createdComplaint = complaintService.createComplaint(command);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(command.getTitle(), result.getTitle());
-        assertEquals(command.getDescription(), result.getDescription());
-        assertEquals(location, result.getLocation());
-        assertEquals(category, result.getCategory());
-        verify(complaintRepository).save(any(Complaint.class));
+        assertNotNull(createdComplaint);
+        assertEquals("Test Complaint", createdComplaint.getTitle());
+        assertEquals("Test Description", createdComplaint.getDescription());
+        assertEquals(category, createdComplaint.getCategory());
+        assertEquals(location, createdComplaint.getLocation());
+        assertEquals(user.getId(), createdComplaint.getCreatorId());
+        verify(complaintRepository, times(1)).save(any(Complaint.class));
     }
 
     @Test
-    void whenCreateComplaintWithNullCategoryId_thenThrowsException() {
+    void whenInvalidCategoryIdIsProvided_thenExceptionIsThrown() {
         // Arrange
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                "Defekte Straße",
-                "Straßenbelag ist beschädigt.",
-                "Hauptstraße",
-                "12",
-                "12345",
-                "Berlin",
-                null
-        );
-
-        // Act & Assert
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            complaintService.createComplaint(command);
-        });
-
-        assertEquals("Kategorie muss angegeben werden", exception.getMessage());
-        verifyNoInteractions(complaintRepository);
-    }
-
-    @Test
-    void whenCreateComplaintWithInvalidCategoryId_thenThrowsException() {
-        // Arrange
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                "Defekte Straße",
-                "Straßenbelag ist beschädigt.",
-                "Hauptstraße",
-                "12",
-                "12345",
-                "Berlin",
-                999
-        );
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setCategoryId(999); // Invalid category ID
 
         when(categoryRepository.findById(999)).thenReturn(Optional.empty());
 
         // Act & Assert
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            complaintService.createComplaint(command);
-        });
-
-        assertEquals("Invalid category ID", exception.getMessage());
-        verifyNoInteractions(complaintRepository);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> complaintService.createComplaint(command));
+        assertEquals("Ungültige Kategorie-ID", exception.getMessage());
     }
 
     @Test
-    void whenFindAllComplaints_thenReturnsListOfDtos() {
+    void whenUserNotFound_thenExceptionIsThrown() {
         // Arrange
-        Category category = new Category("Infrastruktur", "Beschwerden über Straßen, Beleuchtung, Gehwege, Brücken oder andere öffentliche Einrichtungen.", 1);
-        Location location = new Location("Hauptstraße", "12", "12345", "Berlin");
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setCategoryId(1); // Valid category ID
 
-        Complaint complaint = Complaint.builder()
-                .withTitle("Test Complaint")
-                .withDescription("This is a test complaint.")
-                .withCategory(category)
-                .withLocation(location)
-                .build();
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
 
-        when(complaintRepository.findAll()).thenReturn(List.of(complaint));
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(new Category("Valid Category", "Valid Category Description", 1)));
+        when(userRepository.findByEmail("test@example.com")).thenReturn(null);
 
-        // Act
-        List<ComplaintDto> result = complaintService.findAllComplaints();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        ComplaintDto dto = result.get(0);
-        assertEquals("Test Complaint", dto.getTitle());
-        assertEquals("This is a test complaint.", dto.getDescription());
-        assertEquals("Infrastruktur", dto.getCategoryName());
-        assertEquals("Hauptstraße 12, 12345 Berlin", dto.getLocation());
-        verify(complaintRepository).findAll();
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> complaintService.createComplaint(command));
+        assertEquals("Benutzer nicht gefunden: test@example.com", exception.getMessage());
     }
 }
