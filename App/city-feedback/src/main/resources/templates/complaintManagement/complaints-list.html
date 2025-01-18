@@ -24,14 +24,17 @@
       <tr>
         <th>Titel</th>
         <th>Beschreibung</th>
+        <th>Kategorie</th>
         <th>Standort</th>
         <th>Erstellungsdatum</th>
+
       </tr>
       </thead>
       <tbody>
       <tr th:each="complaint : ${complaints}">
         <td th:text="${complaint.title}"></td>
         <td th:text="${complaint.description}"></td>
+        <td th:text="${complaint.categoryName}"></td>
         <td th:text="${complaint.location}"></td>
         <td th:text="${complaint.createdAt}"></td>
       </tr>

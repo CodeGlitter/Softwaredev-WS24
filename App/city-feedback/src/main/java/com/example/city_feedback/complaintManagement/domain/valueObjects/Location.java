@@ -53,53 +53,10 @@ public class Location {
      * @throws IllegalArgumentException if the value does not match the pattern
      */
     private String validateAndTrim(String value, Pattern pattern, String errorMessage) {
-        if (!isValidField(value, pattern)) {
+        if (value == null || !pattern.matcher(value.trim()).matches()) {
             throw new IllegalArgumentException(errorMessage);
         }
         return value.trim();
-    }
-
-    private boolean isValidField(String value, Pattern pattern) {
-        return value != null && pattern.matcher(value.trim()).matches();
-    }
-
-    /**
-     * Validates the street name.
-     *
-     * @param street the street name to validate
-     * @return {@code true} if the street name is valid, {@code false} otherwise
-     */
-    private boolean isValidStreet(String street) {
-        return isValidField(street, STREET_PATTERN);
-    }
-
-    /**
-     * Validates the house number.
-     *
-     * @param houseNumber the house number to validate
-     * @return {@code true} if the house number is valid, {@code false} otherwise
-     */
-    private boolean isValidHouseNumber(String houseNumber) {
-        return isValidField(houseNumber, HOUSE_NUMBER_PATTERN);
-    }
-
-    /**
-     * Validates the postal code.
-     *
-     * @param postalCode the postal code to validate
-     * @return {@code true} if the postal code is valid, {@code false} otherwise
-     */
-    private boolean isValidPostalCode(String postalCode) {
-        return isValidField(postalCode, POSTAL_CODE_PATTERN);
-    }
-
-    /**
-     * Validates all fields of the location object.
-     *
-     * @return {@code true} if all fields are valid, {@code false} otherwise
-     */
-    private boolean isValidCity(String city) {
-        return isValidField(city, CITY_PATTERN);
     }
 
     /**
@@ -108,10 +65,21 @@ public class Location {
      * @return {@code true} if all fields are valid, {@code false} otherwise
      */
     public boolean isValid() {
-        return isValidStreet(street) &&
-                isValidHouseNumber(houseNumber) &&
-                isValidPostalCode(postalCode) &&
-                isValidCity(city);
+        return isValidField(street, STREET_PATTERN) &&
+                isValidField(houseNumber, HOUSE_NUMBER_PATTERN) &&
+                isValidField(postalCode, POSTAL_CODE_PATTERN) &&
+                isValidField(city, CITY_PATTERN);
+    }
+  
+     /**
+     * Utility method to validate a field with a pattern.
+     *
+     * @param value   the field value
+     * @param pattern the pattern to match
+     * @return {@code true} if the value is valid, {@code false} otherwise
+     */
+    private boolean isValidField(String value, Pattern pattern) {
+        return value != null && pattern.matcher(value.trim()).matches();
     }
 
     /**

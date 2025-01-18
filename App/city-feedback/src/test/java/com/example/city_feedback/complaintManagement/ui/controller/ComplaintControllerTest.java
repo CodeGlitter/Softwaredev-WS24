@@ -2,6 +2,7 @@ package com.example.city_feedback.complaintManagement.ui.controller;
 
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
+import com.example.city_feedback.complaintManagement.application.services.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -23,6 +24,9 @@ class ComplaintControllerTest {
     private ComplaintService complaintService;
 
     @Mock
+    private CategoryService categoryService;
+
+    @Mock
     private Model model;
 
     private ComplaintController complaintController;
@@ -34,7 +38,7 @@ class ComplaintControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        complaintController = new ComplaintController(complaintService);
+        complaintController = new ComplaintController(complaintService, categoryService);
     }
 
     /**
@@ -56,10 +60,13 @@ class ComplaintControllerTest {
      */
     @Test
     void whenShowComplaintForm_thenReturnsCorrectViewAndPopulatesModel() {
+        when(categoryService.getAllCategories()).thenReturn(new ArrayList<>());
+
         String view = complaintController.showComplaintForm(model);
 
         assertEquals("complaintManagement/create-complaint", view);
         verify(model).addAttribute(eq("complaint"), any(CreateComplaintCommand.class));
+        verify(model).addAttribute(eq("categories"), anyList());
     }
 
     /**
@@ -67,7 +74,7 @@ class ComplaintControllerTest {
      */
     @Test
     void whenCreateComplaintSucceeds_thenRedirectsToComplaintList() {
-        CreateComplaintCommand command = new CreateComplaintCommand("Title", "Description", "Street", "1", "12345", "City");
+        CreateComplaintCommand command = new CreateComplaintCommand("Title", "Description", "Street", "1", "12345", "City", 1);
 
         String view = complaintController.createComplaint(command, model);
 
@@ -80,7 +87,7 @@ class ComplaintControllerTest {
      */
     @Test
     void whenCreateComplaintFails_thenReturnsToComplaintFormWithError() {
-        CreateComplaintCommand command = new CreateComplaintCommand("", "Description", "Street", "1", "12345", "City");
+        CreateComplaintCommand command = new CreateComplaintCommand("", "Description", "Street", "1", "12345", "City", 1);
         doThrow(new IllegalArgumentException("Error creating complaint"))
                 .when(complaintService).createComplaint(command);
 

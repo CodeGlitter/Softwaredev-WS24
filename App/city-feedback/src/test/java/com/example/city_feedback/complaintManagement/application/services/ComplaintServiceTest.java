@@ -1,101 +1,140 @@
 package com.example.city_feedback.complaintManagement.application.services;
 
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
-import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
+import com.example.city_feedback.complaintManagement.domain.models.Category;
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.LocationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for the {@link ComplaintService} class.
- * Verifies the correctness of complaint creation and retrieval logic.
- */
 class ComplaintServiceTest {
 
     @Mock
     private ComplaintRepository complaintRepository;
 
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private LocationRepository locationRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
     private ComplaintService complaintService;
 
-    /**
-     * Initializes the test environment by setting up mocks for dependencies.
-     * This method is executed before each test case.
-     */
+    private AutoCloseable mocks;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        complaintService = new ComplaintService(complaintRepository);
+        mocks = MockitoAnnotations.openMocks(this);
     }
 
-    /**
-     * Tests that a complaint is successfully created and saved to the repository.
-     * Verifies that the correct {@link Complaint} is returned and saved.
-     */
-    @Test
-    void whenCreateComplaint_thenReturnsComplaintAndSavesToRepository() {
-        // Arrange
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                "Title",
-                "Description",
-                "Street",
-                "1",
-                "12345",
-                "City"
-        );
-
-        Location location = new Location("Street", "1", "12345", "City");
-
-        Complaint complaint = Complaint.builder()
-                .withTitle("Title")
-                .withDescription("Description")
-                .withLocation(location)
-                .build();
-
-        when(complaintRepository.save(any(Complaint.class))).thenReturn(complaint);
-
-        // Act
-        Complaint result = complaintService.createComplaint(command);
-
-        // Assert
-        assertEquals("Title", result.getTitle());
-        assertEquals("Description", result.getDescription());
-        assertEquals(location, result.getLocation());
-        verify(complaintRepository).save(any(Complaint.class));
+    @AfterEach
+    void tearDown() throws Exception {
+        if (mocks != null) {
+            mocks.close();
+        }
     }
 
-    /**
-     * Tests that all complaints are retrieved from the repository and converted into {@link ComplaintDto} objects.
-     * Verifies the correctness of the DTO transformation logic.
-     */
     @Test
-    void whenFindAllComplaints_thenReturnsListOfDtos() {
+    void whenValidCommandIsProvided_thenComplaintIsCreatedSuccessfully() {
         // Arrange
-        Location location = new Location("Street", "1", "12345", "City");
-        Complaint complaint = Complaint.builder()
-                .withTitle("Test Title")
-                .withDescription("Test Description")
-                .withLocation(location)
-                .build();
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Test Complaint");
+        command.setDescription("Test Description");
+        command.setCategoryId(1);
+        command.setStreet("Test Street");
+        command.setHouseNumber("1");
+        command.setPostalCode("12345");
+        command.setCity("Test City");
 
-        when(complaintRepository.findAll()).thenReturn(List.of(complaint));
+        Category category = new Category();
+        category.setId(1);
+        category.setName("Test Category");
+
+        Location location = new Location("Test Street", "1", "12345", "Test City");
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
+        when(locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
+                "Test Street", "1", "12345", "Test City")).thenReturn(Optional.empty());
+        when(locationRepository.save(any(Location.class))).thenReturn(location);
+        when(complaintRepository.save(any(Complaint.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        List<ComplaintDto> result = complaintService.findAllComplaints();
+        Complaint createdComplaint = complaintService.createComplaint(command);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals("Test Title", result.get(0).getTitle());
-        assertEquals("Test Description", result.get(0).getDescription());
-        assertEquals(location.toString(), result.get(0).getLocation());
-        verify(complaintRepository).findAll();
+        assertNotNull(createdComplaint);
+        assertEquals("Test Complaint", createdComplaint.getTitle());
+        assertEquals("Test Description", createdComplaint.getDescription());
+        assertEquals(category, createdComplaint.getCategory());
+        assertEquals(location, createdComplaint.getLocation());
+        assertEquals(user.getId(), createdComplaint.getCreatorId());
+        verify(complaintRepository, times(1)).save(any(Complaint.class));
+    }
+
+    @Test
+    void whenInvalidCategoryIdIsProvided_thenExceptionIsThrown() {
+        // Arrange
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setCategoryId(999); // Invalid category ID
+
+        when(categoryRepository.findById(999)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> complaintService.createComplaint(command));
+        assertEquals("Ungültige Kategorie-ID", exception.getMessage());
+    }
+
+    @Test
+    void whenUserNotFound_thenExceptionIsThrown() {
+        // Arrange
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setCategoryId(1); // Valid category ID
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(new Category("Valid Category", "Valid Category Description", 1)));
+        when(userRepository.findByEmail("test@example.com")).thenReturn(null);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> complaintService.createComplaint(command));
+        assertEquals("Benutzer nicht gefunden: test@example.com", exception.getMessage());
     }
 }

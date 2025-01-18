@@ -4,3 +4,9 @@
 ## Exclude macOS system files
 .DS_Store
 .doc#
+
+## Exclude the `.scannerwork` directory
+App/city-feedback/.scannerwork/
+
+## Exclude the `application.log` file
+application.log

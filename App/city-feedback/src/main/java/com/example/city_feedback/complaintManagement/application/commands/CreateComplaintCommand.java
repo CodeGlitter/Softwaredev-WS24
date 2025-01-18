@@ -11,6 +11,8 @@ public class CreateComplaintCommand {
     private String houseNumber;
     private String postalCode;
     private String city;
+    private Integer categoryId;
+
 
     /**
      * Constructs a new {@code CreateComplaintCommand}.
@@ -21,15 +23,22 @@ public class CreateComplaintCommand {
      * @param houseNumber the house number of the complaint
      * @param postalCode  the postal code of the complaint
      * @param city        the city of the complaint
+     * @param categoryId
      */
-    public CreateComplaintCommand(String title, String description, String street, String houseNumber, String postalCode, String city) {
+    public CreateComplaintCommand(String title, String description, String street, String houseNumber, String postalCode, String city, Integer categoryId) {
         this.title = title;
         this.description = description;
         this.street = street;
         this.houseNumber = houseNumber;
         this.postalCode = postalCode;
         this.city = city;
+        this.categoryId = categoryId;
     }
+
+    public CreateComplaintCommand() {
+
+    }
+
 
     public String getTitle() {
         return title;
@@ -78,4 +87,13 @@ public class CreateComplaintCommand {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
 }
