@@ -48,7 +48,7 @@ class ComplaintControllerTest {
     void whenShowAllComplaints_thenReturnsCorrectViewAndPopulatesModel() {
         when(complaintService.findAllComplaints()).thenReturn(new ArrayList<>());
 
-        String view = complaintController.showAllComplaints(null, model);
+        String view = complaintController.showAllComplaints(null, null, model);
 
         assertEquals("complaintManagement/complaints-list", view);
         verify(complaintService).findAllComplaints();
@@ -62,7 +62,7 @@ class ComplaintControllerTest {
     void whenShowComplaintForm_thenReturnsCorrectViewAndPopulatesModel() {
         when(categoryService.getAllCategories()).thenReturn(new ArrayList<>());
 
-        String view = complaintController.showComplaintForm(model);
+        String view = complaintController.showEditComplaintForm(1L, model);
 
         assertEquals("complaintManagement/create-complaint", view);
         verify(model).addAttribute(eq("complaint"), any(CreateComplaintCommand.class));
@@ -74,9 +74,9 @@ class ComplaintControllerTest {
      */
     @Test
     void whenCreateComplaintSucceeds_thenRedirectsToComplaintList() {
-        CreateComplaintCommand command = new CreateComplaintCommand("Title", "Description", "Street", "1", "12345", "City", 1);
+        CreateComplaintCommand command = new CreateComplaintCommand(99L, "Title", "Description", "Street", "1", "12345", "City", 1);
 
-        String view = complaintController.createComplaint(command, model);
+        String view = complaintController.saveOrUpdateComplaint(99L, command, model);
 
         assertEquals("redirect:/complaints?success=true", view);
         verify(complaintService).createComplaint(command);
@@ -87,11 +87,11 @@ class ComplaintControllerTest {
      */
     @Test
     void whenCreateComplaintFails_thenReturnsToComplaintFormWithError() {
-        CreateComplaintCommand command = new CreateComplaintCommand("", "Description", "Street", "1", "12345", "City", 1);
+        CreateComplaintCommand command = new CreateComplaintCommand(99L, "", "Description", "Street", "1", "12345", "City", 1);
         doThrow(new IllegalArgumentException("Error creating complaint"))
                 .when(complaintService).createComplaint(command);
 
-        String view = complaintController.createComplaint(command, model);
+        String view = complaintController.saveOrUpdateComplaint(99L, command, model);
 
         assertEquals("complaintManagement/create-complaint", view);
         verify(complaintService).createComplaint(command);

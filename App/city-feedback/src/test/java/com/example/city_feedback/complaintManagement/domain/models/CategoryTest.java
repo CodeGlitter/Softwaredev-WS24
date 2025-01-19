@@ -26,9 +26,7 @@ class CategoryTest {
     void whenNameIsSetToNull_thenThrowsException() {
         Category category = new Category();
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            category.setName(null);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> category.setName(null));
 
         assertEquals("Category name cannot be null or empty", exception.getMessage());
     }
@@ -37,18 +35,14 @@ class CategoryTest {
     void whenNameIsSetToEmpty_thenThrowsException() {
         Category category = new Category();
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            category.setName("");
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> category.setName(""));
 
         assertEquals("Category name cannot be null or empty", exception.getMessage());
     }
 
     @Test
     void whenCategoryCreatedWithoutName_thenThrowsException() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Category(null);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Category(null));
 
         assertEquals("Category name cannot be null or empty", exception.getMessage());
     }

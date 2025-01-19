@@ -22,16 +22,19 @@
     <table class="table table-striped">
       <thead>
       <tr>
+        <th></th>
         <th>Titel</th>
         <th>Beschreibung</th>
         <th>Kategorie</th>
         <th>Standort</th>
         <th>Erstellungsdatum</th>
-
       </tr>
       </thead>
       <tbody>
       <tr th:each="complaint : ${complaints}">
+        <td>
+          <a th:href="@{/complaints/{id}/edit(id=${complaint.id})}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+        </td>
         <td th:text="${complaint.title}"></td>
         <td th:text="${complaint.description}"></td>
         <td th:text="${complaint.categoryName}"></td>
