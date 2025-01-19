@@ -112,25 +112,21 @@ public class ComplaintController {
                                         Model model) {
         try {
             if (id != null) {
-                // Editing mode
+                // Update the existing complaint
                 complaintService.updateComplaint(id, command);
                 return "redirect:/complaints?editSuccess=true";
             } else {
-                // Create mode
+                // Create a new complaint
                 complaintService.createComplaint(command);
                 return "redirect:/complaints?success=true";
             }
         } catch (Exception e) {
-            // Handle errors and re-render the form
+            // Handle errors
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("isEditMode", id != null); // Determine mode dynamically
-            return "complaintManagement/create-complaint";
+            return "complaintManagement/create-complaint"; // Stay on the form view
         }
     }
-
-
-
-
 
 }

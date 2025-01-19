@@ -166,6 +166,11 @@ public class Complaint {
         this.location = location;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+
     // Builder class for flexible object creation
     public static class ComplaintBuilder {
         private Long id;
