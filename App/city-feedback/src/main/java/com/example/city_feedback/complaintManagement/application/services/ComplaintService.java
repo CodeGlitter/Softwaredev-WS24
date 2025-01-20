@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -88,6 +89,7 @@ public class ComplaintService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return complaintRepository.findAll().stream()
                 .map(complaint -> new ComplaintDto(
+                        complaint.getId(),
                         complaint.getTitle(),
                         complaint.getDescription(),
                         complaint.getLocation() != null ? complaint.getLocation().toString() : "Unbekannter Standort",
@@ -96,4 +98,36 @@ public class ComplaintService {
                         complaint.getCategory() != null ? complaint.getCategory().getName() : "Keine Kategorie"))
                 .collect(Collectors.toList());
     }
+
+    public Optional<Complaint> getComplaintById(Long id) {
+        return complaintRepository.findById(id);
+    }
+
+    public Complaint updateComplaint(Long id, CreateComplaintCommand command) {
+        // Fetch the complaint by ID
+        var existingComplaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Complaint not found"));
+
+        // Update the complaint fields
+        existingComplaint.setTitle(command.getTitle());
+        existingComplaint.setDescription(command.getDescription());
+
+        // Update category
+        var category = categoryRepository.findById(command.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+        existingComplaint.setCategory(category);
+
+        // Update location
+        var location = locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
+                command.getStreet(), command.getHouseNumber(), command.getPostalCode(), command.getCity()
+        ).orElseGet(() -> locationRepository.save(
+                new Location(command.getStreet(), command.getHouseNumber(), command.getPostalCode(), command.getCity())
+        ));
+        existingComplaint.setLocation(location);
+
+        // Save and return the updated complaint
+        return complaintRepository.save(existingComplaint);
+    }
+
+
 }

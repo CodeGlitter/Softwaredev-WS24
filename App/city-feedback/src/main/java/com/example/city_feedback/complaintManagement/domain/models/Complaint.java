@@ -55,7 +55,8 @@ public class Complaint {
     }
 
     // Additional constructor used in the app
-    public Complaint(String title, String description, Location location, User user, Category category, ComplaintProgress progress) {
+    public Complaint(Long id, String title, String description, Location location, User user, Category category, ComplaintProgress progress) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.location = location;
@@ -149,14 +150,41 @@ public class Complaint {
         }
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+
     // Builder class for flexible object creation
     public static class ComplaintBuilder {
+        private Long id;
         private String title;
         private String description;
         private Location location;
         private Category category;
         private User user;
         private ComplaintProgress progress;
+
+        public ComplaintBuilder withId(Long id) {
+            this.id = id;
+            return this;
+        }
 
         public ComplaintBuilder withTitle(String title) {
             this.title = title;
@@ -189,7 +217,7 @@ public class Complaint {
         }
 
         public Complaint build() {
-            Complaint complaint = new Complaint(title, description, location, user, category, progress);
+            Complaint complaint = new Complaint(id, title, description, location, user, category, progress);
             complaint.validate();
             return complaint;
         }

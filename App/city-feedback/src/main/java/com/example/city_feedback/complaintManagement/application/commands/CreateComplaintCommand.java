@@ -5,6 +5,7 @@ package com.example.city_feedback.complaintManagement.application.commands;
  * Encapsulates complaint title, description, and location details as flat fields.
  */
 public class CreateComplaintCommand {
+    private Long id;
     private String title;
     private String description;
     private String street;
@@ -25,7 +26,8 @@ public class CreateComplaintCommand {
      * @param city        the city of the complaint
      * @param categoryId
      */
-    public CreateComplaintCommand(String title, String description, String street, String houseNumber, String postalCode, String city, Integer categoryId) {
+    public CreateComplaintCommand(Long id, String title, String description, String street, String houseNumber, String postalCode, String city, Integer categoryId) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.street = street;
@@ -94,6 +96,14 @@ public class CreateComplaintCommand {
 
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

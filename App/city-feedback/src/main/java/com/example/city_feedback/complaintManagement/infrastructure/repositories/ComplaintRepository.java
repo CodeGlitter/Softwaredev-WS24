@@ -31,4 +31,6 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
      * @return a list of complaints belonging to the specified category
      */
     List<Complaint> findByCategoryId(Long categoryId);
+
+    Long id(Long id);
 }

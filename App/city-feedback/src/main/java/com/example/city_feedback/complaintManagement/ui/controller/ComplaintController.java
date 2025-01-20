@@ -1,9 +1,6 @@
 package com.example.city_feedback.complaintManagement.ui.controller;
-import com.example.city_feedback.authentication.domain.models.User;
-import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.complaintManagement.application.dto.CategoryDto;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
 import com.example.city_feedback.complaintManagement.application.services.CategoryService;
@@ -43,52 +40,19 @@ public class ComplaintController {
      * @return the view name for displaying the complaints list
      */
     @GetMapping
-    public String showAllComplaints(@RequestParam(value = "success", required = false) String success, Model model) {
+    public String showAllComplaints(@RequestParam(value = "success", required = false) String success,
+                                    @RequestParam(value = "editSuccess", required = false) String editSuccess,
+                                    Model model) {
         model.addAttribute("complaints", complaintService.findAllComplaints());
+
         if ("true".equals(success)) {
             model.addAttribute("successMessage", "Die Beschwerde wurde erfolgreich erstellt!");
+        } else if ("true".equals(editSuccess)) {
+            model.addAttribute("successMessage", "Änderungen wurden erfolgreich gespeichert!");
         }
+
         return "complaintManagement/complaints-list";
     }
-
-    /**
-     * Displays the form for creating a new complaint.
-     *
-     * @param model the model to hold data for the form
-     * @return the view name for the complaint creation form
-     */
-    @GetMapping("/create-complaint")
-    public String showComplaintForm(Model model) {
-        // Initialize with default categoryId = 0
-        CreateComplaintCommand command = new CreateComplaintCommand();
-        command.setCategoryId(0); // Default value
-        model.addAttribute("complaint", command);
-        model.addAttribute("categories", categoryService.getAllCategories());
-        return "complaintManagement/create-complaint";
-    }
-
-
-    /**
-     * Handles the submission of a new complaint.
-     *
-     * @param command the data submitted for the new complaint
-     * @param model   the model to hold error messages, if any
-     * @return a redirect to the complaints list on success, or the form view on error
-     */
-    @PostMapping("/create-complaint")
-    public String createComplaint(@ModelAttribute("complaint") CreateComplaintCommand command, Model model) {
-        try {
-            // Call the service to handle complaint creation
-            complaintService.createComplaint(command);
-            return "redirect:/complaints?success=true";
-        } catch (Exception e) {
-            // Handle errors and re-render the form
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("categories", categoryService.getAllCategories());
-            return "complaintManagement/create-complaint";
-        }
-    }
-
 
 
     /**
@@ -101,4 +65,68 @@ public class ComplaintController {
     public List<CategoryDto> getAllCategories() {
         return categoryService.getAllCategories(); // Use the injected CategoryService
     }
+
+    @GetMapping({"/create-complaint", "/{id}/edit"})
+    public String showEditComplaintForm(@PathVariable(required = false) Long id, Model model) {
+        CreateComplaintCommand command = new CreateComplaintCommand();
+
+        if (id != null) {
+            // Editing mode
+            var complaint = complaintService.getComplaintById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Beschwerde nicht gefunden"));
+
+            // Map the existing complaint data to the command object
+            command.setTitle(complaint.getTitle());
+            command.setDescription(complaint.getDescription());
+            command.setCategoryId(complaint.getCategory().getId());
+            command.setStreet(complaint.getLocation().getStreet());
+            command.setHouseNumber(complaint.getLocation().getHouseNumber());
+            command.setPostalCode(complaint.getLocation().getPostalCode());
+            command.setCity(complaint.getLocation().getCity());
+
+            model.addAttribute("isEditMode", true);
+            model.addAttribute("complaintId", id);
+        } else {
+            // Creating mode
+            command.setCategoryId(0); // Default category
+            model.addAttribute("isEditMode", false);
+        }
+
+        model.addAttribute("complaint", command);
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "complaintManagement/create-complaint";
+    }
+
+
+    @GetMapping("/{id}")
+    public String getComplaintById(@PathVariable Long id, Model model) {
+        Complaint complaint = complaintService.getComplaintById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Beschwerde nicht gefunden"));
+        model.addAttribute("complaint", complaint);
+        return "complaintManagement/view-complaint"; // Replace with your template name
+    }
+
+    @PostMapping({"/create-complaint", "/{id}"})
+    public String saveOrUpdateComplaint(@PathVariable(required = false) Long id,
+                                        @ModelAttribute("complaint") CreateComplaintCommand command,
+                                        Model model) {
+        try {
+            if (id != null) {
+                // Update the existing complaint
+                complaintService.updateComplaint(id, command);
+                return "redirect:/complaints?editSuccess=true";
+            } else {
+                // Create a new complaint
+                complaintService.createComplaint(command);
+                return "redirect:/complaints?success=true";
+            }
+        } catch (Exception e) {
+            // Handle errors
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("isEditMode", id != null); // Determine mode dynamically
+            return "complaintManagement/create-complaint"; // Stay on the form view
+        }
+    }
+
 }
