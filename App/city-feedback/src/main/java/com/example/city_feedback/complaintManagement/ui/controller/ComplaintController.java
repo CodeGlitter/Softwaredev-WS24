@@ -1,9 +1,12 @@
 package com.example.city_feedback.complaintManagement.ui.controller;
 import com.example.city_feedback.complaintManagement.application.dto.CategoryDto;
+import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
 import com.example.city_feedback.complaintManagement.application.services.CategoryService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,27 +35,15 @@ public class ComplaintController {
     }
 
 
-    /**
-     * Displays a list of all complaints.
-     *
-     * @param success optional parameter indicating the success of a previous operation
-     * @param model   the model to hold data for the view
-     * @return the view name for displaying the complaints list
-     */
     @GetMapping
-    public String showAllComplaints(@RequestParam(value = "success", required = false) String success,
-                                    @RequestParam(value = "editSuccess", required = false) String editSuccess,
-                                    Model model) {
-        model.addAttribute("complaints", complaintService.findAllComplaints());
-
-        if ("true".equals(success)) {
-            model.addAttribute("successMessage", "Die Beschwerde wurde erfolgreich erstellt!");
-        } else if ("true".equals(editSuccess)) {
-            model.addAttribute("successMessage", "Änderungen wurden erfolgreich gespeichert!");
-        }
-
+    public String listComplaints(Authentication authentication, Model model) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String userEmail = userDetails.getUsername();
+        List<ComplaintDto> complaints = complaintService.getComplaintsByCreatorEmail(userEmail);
+        model.addAttribute("complaints", complaints);
         return "complaintManagement/complaints-list";
     }
+
 
 
     /**
@@ -128,5 +119,12 @@ public class ComplaintController {
             return "complaintManagement/create-complaint"; // Stay on the form view
         }
     }
+
+    @GetMapping("/{id}/delete")
+    public String deleteComplaint(@PathVariable Long id) {
+        complaintService.deleteComplaintById(id);
+        return "redirect:/complaints?success=true";
+    }
+
 
 }

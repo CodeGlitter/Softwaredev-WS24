@@ -24,13 +24,10 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
      */
     List<Complaint> findByLocationCityIgnoreCase(String city);
 
-    /**
-     * Finds complaints by category ID.
-     *
-     * @param categoryId the ID of the category
-     * @return a list of complaints belonging to the specified category
-     */
-    List<Complaint> findByCategoryId(Long categoryId);
+    List<Complaint> findByUser_Email(String email);
 
     Long id(Long id);
+
+    void delete(Complaint complaint);
+
 }

@@ -30,6 +30,7 @@ public class ComplaintService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
 
+
     public ComplaintService(ComplaintRepository complaintRepository,
                             CategoryRepository categoryRepository,
                             LocationRepository locationRepository,
@@ -38,6 +39,7 @@ public class ComplaintService {
         this.categoryRepository = categoryRepository;
         this.locationRepository = locationRepository;
         this.userRepository = userRepository;
+
     }
 
     public Complaint createComplaint(CreateComplaintCommand command) {
@@ -86,18 +88,31 @@ public class ComplaintService {
     }
 
     public List<ComplaintDto> findAllComplaints() {
+        // Define the date-time formatter for the desired format
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+        // Retrieve all complaints, map them to DTOs, and format the `createdAt` field
         return complaintRepository.findAll().stream()
-                .map(complaint -> new ComplaintDto(
-                        complaint.getId(),
-                        complaint.getTitle(),
-                        complaint.getDescription(),
-                        complaint.getLocation() != null ? complaint.getLocation().toString() : "Unbekannter Standort",
-                        complaint.getCreatedAt() != null ? complaint.getCreatedAt().format(formatter) : "Unbekanntes Datum",
-                        complaint.getCategory() != null ? complaint.getCategory().getId() : 0,
-                        complaint.getCategory() != null ? complaint.getCategory().getName() : "Keine Kategorie"))
+                .map(complaint -> {
+                    // Format `createdAt` if it's not null
+                    String formattedCreatedAt = complaint.getCreatedAt() != null
+                            ? formatter.format(complaint.getCreatedAt())
+                            : "Unbekanntes Datum";
+
+                    // Create and return the DTO with the formatted `createdAt`
+                    return new ComplaintDto(
+                            complaint.getId(),
+                            complaint.getTitle(),
+                            complaint.getDescription(),
+                            complaint.getLocation() != null ? complaint.getLocation().toString() : "Unbekannter Standort",
+                            formattedCreatedAt,
+                            complaint.getCategory() != null ? complaint.getCategory().getId() : 0,
+                            complaint.getCategory() != null ? complaint.getCategory().getName() : "Keine Kategorie"
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
 
     public Optional<Complaint> getComplaintById(Long id) {
         return complaintRepository.findById(id);
@@ -127,6 +142,28 @@ public class ComplaintService {
 
         // Save and return the updated complaint
         return complaintRepository.save(existingComplaint);
+    }
+
+    public List<ComplaintDto> getComplaintsByCreatorEmail(String email) {
+        return complaintRepository.findByUser_Email(email).stream()
+                .map(complaint -> {
+                    System.out.println("Original createdAt: " + complaint.getCreatedAt());
+                    return new ComplaintDto(
+                            complaint.getId(),
+                            complaint.getTitle(),
+                            complaint.getDescription(),
+                            complaint.getLocation() != null ? complaint.getLocation().toString() : "Unbekannter Standort",
+                            complaint.getCreatedAt() != null ?
+                                    DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").format(complaint.getCreatedAt()) : "Unbekanntes Datum",
+                            complaint.getCategory() != null ? complaint.getCategory().getId() : 0,
+                            complaint.getCategory() != null ? complaint.getCategory().getName() : "Keine Kategorie"
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public void deleteComplaintById(Long id) {
+        complaintRepository.deleteById(id);
     }
 
 
