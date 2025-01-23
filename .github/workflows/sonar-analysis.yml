@@ -42,7 +42,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
         run: |
-          cd city-feedback
+          cd App/city-feedback
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=CodeGlitter_Softwaredev-WS24 \
             -Dsonar.branch.name=${{ github.ref_name }} \
