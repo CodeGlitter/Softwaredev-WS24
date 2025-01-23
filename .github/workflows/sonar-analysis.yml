@@ -15,17 +15,16 @@ on:
 jobs:
   build:
     name: Build and analyze
-    working-directory: ./city-feedback
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -39,12 +38,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
-        working-directory: ./city-feedback # Ensure commands run in the correct directory
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=CodeGlitter_Softwaredev-WS24 \
-          -Dsonar.branch.name=${{ github.ref_name }} \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        run: |
+          cd city-feedback
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=CodeGlitter_Softwaredev-WS24 \
+            -Dsonar.branch.name=${{ github.ref_name }} \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
