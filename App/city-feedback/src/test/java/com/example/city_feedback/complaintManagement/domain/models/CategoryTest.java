@@ -5,45 +5,72 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for the {@link Category} class.
+ * Unit tests for the {@link Category} domain model.
  */
 class CategoryTest {
 
     @Test
-    void whenValidNameIsProvided_thenCategoryIsCreated() {
-        Category category = new Category("Infrastructure");
-        assertEquals("Infrastructure", category.getName());
+    void whenValidInputs_thenCategoryObjectIsCreated() {
+        // Arrange & Act
+        Category category = Category.builder()
+                .withName("Education")
+                .withDescription("Education-related complaints")
+                .build();
+
+        // Assert
+        assertEquals("Education", category.getName());
+        assertEquals("Education-related complaints", category.getDescription());
+        assertTrue(category.getComplaints().isEmpty());
     }
 
     @Test
-    void whenNameIsSetToValid_thenNoExceptionIsThrown() {
-        Category category = new Category();
-        category.setName("Environment");
-        assertEquals("Environment", category.getName());
+    void whenCategoryNameIsNull_thenThrowsException() {
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                Category.builder().withName(null).build()
+        );
+        assertEquals("Kategoriename kann nicht null oder leer sein.", exception.getMessage());
     }
 
     @Test
-    void whenNameIsSetToNull_thenThrowsException() {
-        Category category = new Category();
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> category.setName(null));
-
-        assertEquals("Category name cannot be null or empty", exception.getMessage());
+    void whenCategoryNameIsEmpty_thenThrowsException() {
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                Category.builder().withName("").build()
+        );
+        assertEquals("Kategoriename kann nicht null oder leer sein.", exception.getMessage());
     }
 
     @Test
-    void whenNameIsSetToEmpty_thenThrowsException() {
-        Category category = new Category();
+    void whenDescriptionIsSet_thenCategoryObjectUpdatesSuccessfully() {
+        // Arrange
+        Category category = Category.builder()
+                .withName("Health")
+                .build();
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> category.setName(""));
+        // Act
+        category.setDescription("Health-related complaints");
 
-        assertEquals("Category name cannot be null or empty", exception.getMessage());
+        // Assert
+        assertEquals("Health-related complaints", category.getDescription());
     }
 
     @Test
-    void whenCategoryCreatedWithoutName_thenThrowsException() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Category(null));
+    void whenGetOptionalDescriptionCalled_thenReturnsCorrectValue() {
+        // Arrange
+        Category categoryWithDescription = Category.builder()
+                .withName("Transport")
+                .withDescription("Transport-related issues")
+                .build();
 
-        assertEquals("Category name cannot be null or empty", exception.getMessage());
+        Category categoryWithoutDescription = Category.builder()
+                .withName("Utilities")
+                .build();
+
+        // Act & Assert
+        assertTrue(categoryWithDescription.getOptionalDescription().isPresent());
+        assertEquals("Transport-related issues", categoryWithDescription.getOptionalDescription().get());
+
+        assertTrue(categoryWithoutDescription.getOptionalDescription().isEmpty());
     }
 }

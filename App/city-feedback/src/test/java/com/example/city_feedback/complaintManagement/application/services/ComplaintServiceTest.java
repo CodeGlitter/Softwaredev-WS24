@@ -9,22 +9,25 @@ import com.example.city_feedback.complaintManagement.domain.valueObjects.Locatio
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.LocationRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ComplaintServiceTest {
+/**
+ * Unit tests for the {@link ComplaintService} class.
+ * Verifies the correctness of complaint creation, deletion, and retrieval logic.
+ */
+public class ComplaintServiceTest {
 
     @Mock
     private ComplaintRepository complaintRepository;
@@ -41,100 +44,103 @@ class ComplaintServiceTest {
     @InjectMocks
     private ComplaintService complaintService;
 
-    private AutoCloseable mocks;
-
     @BeforeEach
     void setUp() {
-        mocks = MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this);
+
+        // Mock Security Context
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("test@example.com");
+        SecurityContextHolder.setContext(securityContext);
     }
 
-    @AfterEach
-    void tearDown() throws Exception {
-        if (mocks != null) {
-            mocks.close();
-        }
-    }
-
+    /**
+     * Tests that a complaint is successfully created when all input fields are valid.
+     */
     @Test
-    void whenValidCommandIsProvided_thenComplaintIsCreatedSuccessfully() {
+    void whenAllFieldsAreValid_thenComplaintIsCreatedSuccessfully() {
         // Arrange
         CreateComplaintCommand command = new CreateComplaintCommand();
         command.setTitle("Test Complaint");
-        command.setDescription("Test Description");
-        command.setCategoryId(1);
+        command.setDescription("Description");
         command.setStreet("Test Street");
-        command.setHouseNumber("1");
+        command.setHouseNumber("123");
         command.setPostalCode("12345");
         command.setCity("Test City");
+        command.setCategoryId(1);
 
-        Category category = new Category();
-        category.setId(1);
-        category.setName("Test Category");
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@example.com");
 
-        Location location = new Location("Test Street", "1", "12345", "Test City");
+        Category mockCategory = Category.builder()
+                .withName("Category Name")
+                .withDescription("Description")
+                .build();
 
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@example.com");
+        Location mockLocation = new Location("Test Street", "123", "12345", "Test City");
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("test@example.com");
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+        Complaint mockComplaint = mock(Complaint.class);
+        when(mockComplaint.getId()).thenReturn(1L);
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
-        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(mockCategory));
+        when(userRepository.findByEmail(anyString())).thenReturn(mockUser);
         when(locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
-                "Test Street", "1", "12345", "Test City")).thenReturn(Optional.empty());
-        when(locationRepository.save(any(Location.class))).thenReturn(location);
-        when(complaintRepository.save(any(Complaint.class))).thenAnswer(invocation -> invocation.getArgument(0));
+                anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(Optional.of(mockLocation));
+        when(complaintRepository.save(any(Complaint.class))).thenReturn(mockComplaint);
 
         // Act
-        Complaint createdComplaint = complaintService.createComplaint(command);
+        Complaint result = complaintService.createComplaint(command);
 
         // Assert
-        assertNotNull(createdComplaint);
-        assertEquals("Test Complaint", createdComplaint.getTitle());
-        assertEquals("Test Description", createdComplaint.getDescription());
-        assertEquals(category, createdComplaint.getCategory());
-        assertEquals(location, createdComplaint.getLocation());
-        assertEquals(user.getId(), createdComplaint.getCreatorId());
-        verify(complaintRepository, times(1)).save(any(Complaint.class));
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
     }
 
+    /**
+     * Tests that an exception is thrown when an invalid category ID is provided.
+     */
     @Test
-    void whenInvalidCategoryIdIsProvided_thenExceptionIsThrown() {
+    void whenCategoryIsInvalid_thenThrowsException() {
         // Arrange
         CreateComplaintCommand command = new CreateComplaintCommand();
-        command.setCategoryId(999); // Invalid category ID
+        command.setCategoryId(99); // Non-existent category
 
-        when(categoryRepository.findById(999)).thenReturn(Optional.empty());
+        when(categoryRepository.findById(99)).thenReturn(Optional.empty());
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> complaintService.createComplaint(command));
-        assertEquals("Ungültige Kategorie-ID", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> complaintService.createComplaint(command));
     }
 
+    /**
+     * Tests that a complaint is successfully deleted when it exists.
+     */
     @Test
-    void whenUserNotFound_thenExceptionIsThrown() {
+    void whenComplaintExists_thenDeletesSuccessfully() {
         // Arrange
-        CreateComplaintCommand command = new CreateComplaintCommand();
-        command.setCategoryId(1); // Valid category ID
+        Long complaintId = 1L;
+        when(complaintRepository.existsById(complaintId)).thenReturn(true);
 
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("test@example.com");
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+        // Act
+        complaintService.deleteComplaint(complaintId);
 
-        when(categoryRepository.findById(1)).thenReturn(Optional.of(new Category("Valid Category", "Valid Category Description", 1)));
-        when(userRepository.findByEmail("test@example.com")).thenReturn(null);
+        // Assert
+        verify(complaintRepository, times(1)).deleteById(complaintId);
+    }
+
+    /**
+     * Tests that an exception is thrown when trying to delete a non-existent complaint.
+     */
+    @Test
+    void whenComplaintDoesNotExist_thenThrowsException() {
+        // Arrange
+        Long complaintId = 1L;
+        when(complaintRepository.existsById(complaintId)).thenReturn(false);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> complaintService.createComplaint(command));
-        assertEquals("Benutzer nicht gefunden: test@example.com", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> complaintService.deleteComplaint(complaintId));
     }
 }

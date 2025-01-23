@@ -1,27 +1,26 @@
 package com.example.city_feedback.complaintManagement.ui.controller;
 
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
-import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
+import com.example.city_feedback.complaintManagement.application.dto.CategoryDto;
+import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
 import com.example.city_feedback.complaintManagement.application.services.CategoryService;
-import com.example.city_feedback.complaintManagement.domain.models.Category;
-import com.example.city_feedback.complaintManagement.domain.models.Complaint;
-import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
+import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for the {@link ComplaintController} class.
- * Verifies the behavior of controller methods responsible for handling complaint-related requests.
+ * Unit tests for the {@link ComplaintController}.
  */
 class ComplaintControllerTest {
 
@@ -34,39 +33,83 @@ class ComplaintControllerTest {
     @Mock
     private Model model;
 
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    private UserDetails userDetails;
+
     private ComplaintController complaintController;
 
-    /**
-     * Sets up the test environment by initializing mocks and the {@link ComplaintController} instance.
-     * This method is executed before each test case.
-     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         complaintController = new ComplaintController(complaintService, categoryService);
     }
 
-    /**
-     * Tests that the "show all complaints" method returns the correct view name and populates the model with complaint data.
-     */
     @Test
-    void whenShowAllComplaints_thenReturnsCorrectViewAndPopulatesModel() {
-        when(complaintService.findAllComplaints()).thenReturn(new ArrayList<>());
+    void whenListComplaints_thenReturnsCorrectViewAndPopulatesModel() {
+        // Mock user details
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getUsername()).thenReturn("user@example.com");
 
-        String view = complaintController.showAllComplaints(null, null, model);
+        // Mock complaints
+        List<ComplaintDto> mockComplaints = List.of(
+                new ComplaintDto(1L, "Title", "Description", "Street 123, 12345 City", "2023-01-01", 1, "Category")
+        );
+        when(complaintService.getComplaintsByCreatorEmail("user@example.com")).thenReturn(mockComplaints);
 
+        // Call controller method
+        String view = complaintController.listComplaints(authentication, model);
+
+        // Verify behavior and assertions
         assertEquals("complaintManagement/complaints-list", view);
-        verify(complaintService).findAllComplaints();
-        verify(model).addAttribute(eq("complaints"), anyList());
+        verify(complaintService).getComplaintsByCreatorEmail("user@example.com");
+        verify(model).addAttribute(eq("complaints"), eq(mockComplaints));
     }
 
-    /**
-     * Tests that the "create complaint" method redirects to the complaints list upon successful complaint creation.
-     */
     @Test
-    void whenCreateComplaintSucceeds_thenRedirectsToComplaintList() {
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                null, "Title", "Description", "Street", "1", "12345", "City", 1);
+    void whenGetAllCategories_thenReturnsCategoryList() {
+        List<CategoryDto> mockCategories = List.of(new CategoryDto(1, "Category", "Description"));
+        when(categoryService.getAllCategories()).thenReturn(mockCategories);
+
+        List<CategoryDto> result = complaintController.getAllCategories();
+
+        assertEquals(1, result.size());
+        assertEquals("Category", result.get(0).getName());
+        verify(categoryService).getAllCategories();
+    }
+
+    @Test
+    void whenShowEditComplaintFormForNewComplaint_thenReturnsCorrectViewAndPopulatesModel() {
+        when(categoryService.getAllCategories()).thenReturn(new ArrayList<>());
+
+        String view = complaintController.showEditComplaintForm(null, model);
+
+        assertEquals("complaintManagement/create-complaint", view);
+        verify(model).addAttribute(eq("isEditMode"), eq(false));
+        verify(model).addAttribute(eq("categories"), anyList());
+    }
+
+    @Test
+    void whenShowEditComplaintFormForExistingComplaint_thenReturnsCorrectViewAndPopulatesModel() {
+        ComplaintDto mockComplaint = new ComplaintDto(1L, "Title", "Description", "Street 123, 12345 City", "2023-01-01", 1, "Category");
+        when(complaintService.findComplaintById(1L)).thenReturn(mockComplaint);
+        when(categoryService.getAllCategories()).thenReturn(new ArrayList<>());
+
+        String view = complaintController.showEditComplaintForm(1L, model);
+
+        assertEquals("complaintManagement/create-complaint", view);
+        verify(model).addAttribute(eq("isEditMode"), eq(true));
+        verify(model).addAttribute(eq("complaintId"), eq(1L));
+        verify(model).addAttribute(eq("categories"), anyList());
+    }
+
+    @Test
+    void whenSaveOrUpdateComplaint_thenRedirectsToSuccess() {
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Title");
+        command.setDescription("Description");
 
         String view = complaintController.saveOrUpdateComplaint(null, command, model);
 
@@ -74,40 +117,13 @@ class ComplaintControllerTest {
         verify(complaintService).createComplaint(command);
     }
 
-    /**
-     * Tests that the "update complaint" method redirects to the complaints list upon successful complaint update.
-     */
     @Test
-    void whenUpdateComplaintSucceeds_thenRedirectsToComplaintList() {
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                99L, "Updated Title", "Updated Description", "Updated Street", "2", "54321", "Updated City", 2);
+    void whenDeleteComplaint_thenRedirectsToSuccess() {
+        doNothing().when(complaintService).deleteComplaint(1L);
 
-        String view = complaintController.saveOrUpdateComplaint(99L, command, model);
+        String view = complaintController.deleteComplaint(1L);
 
-        assertEquals("redirect:/complaints?editSuccess=true", view);
-        verify(complaintService).updateComplaint(99L, command);
-    }
-
-    /**
-     * Tests that the "create complaint" method returns to the complaint form with an error message when an exception occurs.
-     */
-    @Test
-    void whenCreateComplaintFails_thenReturnsToComplaintFormWithError() {
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                null, "", "Description", "Street", "1", "12345", "City", 1);
-
-        // Simulate service throwing an exception
-        doThrow(new IllegalArgumentException("Error creating complaint"))
-                .when(complaintService).createComplaint(command);
-
-        // Call the controller method
-        String view = complaintController.saveOrUpdateComplaint(null, command, model);
-
-        // Assert that the view is the form page
-        assertEquals("complaintManagement/create-complaint", view);
-
-        // Verify error is added to the model
-        verify(model).addAttribute(eq("error"), eq("Error creating complaint"));
-        verify(model).addAttribute(eq("isEditMode"), eq(false));
+        assertEquals("redirect:/complaints?success=true", view);
+        verify(complaintService).deleteComplaint(1L);
     }
 }

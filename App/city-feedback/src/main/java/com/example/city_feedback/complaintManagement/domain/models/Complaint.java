@@ -24,7 +24,7 @@ public class Complaint {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_progress_id", nullable = true)
+    @JoinColumn(name = "complaint_progress_id", nullable = false)
     private ComplaintProgress progress;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -180,6 +180,7 @@ public class Complaint {
         private Category category;
         private User user;
         private ComplaintProgress progress;
+        private long creatorId;
 
         public ComplaintBuilder withId(Long id) {
             this.id = id;
@@ -208,6 +209,7 @@ public class Complaint {
 
         public ComplaintBuilder withUser(User user) {
             this.user = user;
+            this.creatorId = user != null ? user.getId() : 0; // Set creatorId if user is not null
             return this;
         }
 
@@ -218,8 +220,14 @@ public class Complaint {
 
         public Complaint build() {
             Complaint complaint = new Complaint(id, title, description, location, user, category, progress);
+            complaint.setCreatorId(this.creatorId);
             complaint.validate();
             return complaint;
+        }
+
+        public ComplaintBuilder withCreatorId(long id) {
+            this.creatorId = id;
+            return this;
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.city_feedback.complaintManagement.ui.controller;
+
 import com.example.city_feedback.complaintManagement.application.dto.CategoryDto;
 import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
-import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
 import com.example.city_feedback.complaintManagement.application.services.ComplaintService;
 import com.example.city_feedback.complaintManagement.application.services.CategoryService;
@@ -24,16 +24,10 @@ public class ComplaintController {
     private final ComplaintService complaintService;
     private final CategoryService categoryService;
 
-    /**
-     * Constructs a new {@code ComplaintController} with the provided service.
-     *
-     * @param complaintService the service to handle complaint operations
-     */
     public ComplaintController(ComplaintService complaintService, CategoryService categoryService) {
         this.complaintService = complaintService;
         this.categoryService = categoryService;
     }
-
 
     @GetMapping
     public String listComplaints(Authentication authentication, Model model) {
@@ -44,17 +38,10 @@ public class ComplaintController {
         return "complaintManagement/complaints-list";
     }
 
-
-
-    /**
-     * Returns a list of all categories.
-     *
-     * @return a list of {@code CategoryDto} objects
-     */
     @GetMapping("/categories")
     @ResponseBody
     public List<CategoryDto> getAllCategories() {
-        return categoryService.getAllCategories(); // Use the injected CategoryService
+        return categoryService.getAllCategories();
     }
 
     @GetMapping({"/create-complaint", "/{id}/edit"})
@@ -63,22 +50,28 @@ public class ComplaintController {
 
         if (id != null) {
             // Editing mode
-            var complaint = complaintService.getComplaintById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Beschwerde nicht gefunden"));
+            ComplaintDto complaint = complaintService.findComplaintById(id);
 
-            // Map the existing complaint data to the command object
             command.setTitle(complaint.getTitle());
             command.setDescription(complaint.getDescription());
-            command.setCategoryId(complaint.getCategory().getId());
-            command.setStreet(complaint.getLocation().getStreet());
-            command.setHouseNumber(complaint.getLocation().getHouseNumber());
-            command.setPostalCode(complaint.getLocation().getPostalCode());
-            command.setCity(complaint.getLocation().getCity());
+            command.setCategoryId(complaint.getCategoryId());
+
+            // Handle Location as a String for command
+            if (complaint.getLocation() != null) {
+                String[] locationParts = complaint.getLocation().split(", ");
+                if (locationParts.length == 2) {
+                    String[] streetAndHouse = locationParts[0].split(" ", 2);
+                    command.setStreet(streetAndHouse[0]);
+                    command.setHouseNumber(streetAndHouse.length > 1 ? streetAndHouse[1] : "");
+                    String[] postalAndCity = locationParts[1].split(" ", 2);
+                    command.setPostalCode(postalAndCity[0]);
+                    command.setCity(postalAndCity.length > 1 ? postalAndCity[1] : "");
+                }
+            }
 
             model.addAttribute("isEditMode", true);
             model.addAttribute("complaintId", id);
         } else {
-            // Creating mode
             command.setCategoryId(0); // Default category
             model.addAttribute("isEditMode", false);
         }
@@ -88,43 +81,29 @@ public class ComplaintController {
         return "complaintManagement/create-complaint";
     }
 
-
-    @GetMapping("/{id}")
-    public String getComplaintById(@PathVariable Long id, Model model) {
-        Complaint complaint = complaintService.getComplaintById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Beschwerde nicht gefunden"));
-        model.addAttribute("complaint", complaint);
-        return "complaintManagement/view-complaint"; // Replace with your template name
-    }
-
     @PostMapping({"/create-complaint", "/{id}"})
     public String saveOrUpdateComplaint(@PathVariable(required = false) Long id,
                                         @ModelAttribute("complaint") CreateComplaintCommand command,
                                         Model model) {
         try {
             if (id != null) {
-                // Update the existing complaint
                 complaintService.updateComplaint(id, command);
                 return "redirect:/complaints?editSuccess=true";
             } else {
-                // Create a new complaint
                 complaintService.createComplaint(command);
                 return "redirect:/complaints?success=true";
             }
         } catch (Exception e) {
-            // Handle errors
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", categoryService.getAllCategories());
-            model.addAttribute("isEditMode", id != null); // Determine mode dynamically
-            return "complaintManagement/create-complaint"; // Stay on the form view
+            model.addAttribute("isEditMode", id != null);
+            return "complaintManagement/create-complaint";
         }
     }
 
     @GetMapping("/{id}/delete")
     public String deleteComplaint(@PathVariable Long id) {
-        complaintService.deleteComplaintById(id);
+        complaintService.deleteComplaint(id);
         return "redirect:/complaints?success=true";
     }
-
-
 }

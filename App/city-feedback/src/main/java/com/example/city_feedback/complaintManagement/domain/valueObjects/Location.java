@@ -36,10 +36,10 @@ public class Location {
     }
 
     public Location(String street, String houseNumber, String postalCode, String city) {
-        this.street = validateAndTrim(street, STREET_PATTERN, "Invalid street name.");
-        this.houseNumber = validateAndTrim(houseNumber, HOUSE_NUMBER_PATTERN, "Invalid house number.");
-        this.postalCode = validateAndTrim(postalCode, POSTAL_CODE_PATTERN, "Invalid postal code.");
-        this.city = validateAndTrim(city, CITY_PATTERN, "Invalid city name.");
+        this.street = validateAndTrim(street, STREET_PATTERN, "Ungültiger Straße.");
+        this.houseNumber = validateAndTrim(houseNumber, HOUSE_NUMBER_PATTERN, "Ungültige Hausnummer.");
+        this.postalCode = validateAndTrim(postalCode, POSTAL_CODE_PATTERN, "Ungültige PLZ.");
+        this.city = validateAndTrim(city, CITY_PATTERN, "Ungültige Stadt.");
     }
 
     /**
