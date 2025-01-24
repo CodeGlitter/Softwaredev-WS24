@@ -31,6 +31,12 @@ public class Category {
         this.description = description;
     }
 
+    public Category(Integer id, String name, String description) {
+        this.id = id;
+        setName(name);
+        setDescription(description);
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -64,6 +70,10 @@ public class Category {
 
     public Optional<String> getOptionalDescription() {
         return Optional.ofNullable(description);
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public static class Builder {

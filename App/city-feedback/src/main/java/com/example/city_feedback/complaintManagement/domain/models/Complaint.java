@@ -170,6 +170,10 @@ public class Complaint {
         this.id = id;
     }
 
+    public User getCreator() {
+        return user;
+    }
+
 
     // Builder class for flexible object creation
     public static class ComplaintBuilder {

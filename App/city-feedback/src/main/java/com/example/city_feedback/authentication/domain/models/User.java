@@ -54,6 +54,9 @@ public class User {
         this.roles = roles;
     }
 
+    public User(String mail, String testUser) {
+    }
+
 
     public long getId() {
         return id;
