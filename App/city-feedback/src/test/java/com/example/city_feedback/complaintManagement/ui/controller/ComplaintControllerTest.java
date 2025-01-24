@@ -32,11 +32,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 /**
@@ -94,7 +91,7 @@ class ComplaintControllerTest {
                         .param("title", "New Complaint")
                         .param("description", "New Description"))
                 .andExpect(status().is3xxRedirection()) // Check for any 3xx status
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/complaints?success=true")); // Verify redirect URL
+                .andExpect(redirectedUrl("/complaints?success=true")); // Verify redirect URL
 
         // Verify that the service method was called once
         verify(complaintService, times(1)).createComplaint(any(CreateComplaintCommand.class));
@@ -210,4 +207,17 @@ class ComplaintControllerTest {
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].name").value("Category 2"));
     }
+
+
+    @Test
+    void whenDeleteComplaintWithInvalidId_thenReturnsNotFound() throws Exception {
+        doThrow(new IllegalArgumentException("Complaint not found")).when(complaintService).deleteComplaint(anyLong());
+
+        mockMvc.perform(delete("/complaints/delete/{id}", 999L))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+
 }

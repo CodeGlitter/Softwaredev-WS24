@@ -1,5 +1,8 @@
 package com.example.city_feedback.complaintManagement.application.dto;
 
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.complaintManagement.domain.models.Complaint;
+import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,5 +99,33 @@ class ComplaintDtoTest {
         // Assert
         assertEquals("Road Maintenance", complaintDto.getCategoryName());
     }
+
+    @Test
+    void whenComplaintHasEmptyTitle_thenThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            Complaint complaint = Complaint.builder()
+                    .withTitle("") // Empty title
+                    .withDescription("Valid Description")
+                    .withLocation(new Location("Main Street", "1", "12345", "City"))
+                    .withUser(new User())
+                    .build();
+        });
+
+        assertEquals("Titel bitte 5-100 Zeichen.", exception.getMessage());
+    }
+
+    @Test
+    void whenComplaintHasLongDescription_thenIsValid() {
+        String longDescription = "a".repeat(1000); // Max length
+        Complaint complaint = Complaint.builder()
+                .withTitle("Valid Title")
+                .withDescription(longDescription)
+                .withLocation(new Location("Main Street", "1", "12345", "City"))
+                .withUser(new User())
+                .build();
+
+        assertTrue(complaint.isValid());
+    }
+
 }
 
