@@ -1,11 +1,12 @@
 package com.example.city_feedback.complaintManagement.domain.models;
 
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for the {@link Category} domain model.
+ * Unit tests for the {@link Category} domain model, including edge cases and validation logic.
  */
 class CategoryTest {
 
@@ -72,5 +73,89 @@ class CategoryTest {
         assertEquals("Transport-related issues", categoryWithDescription.getOptionalDescription().get());
 
         assertTrue(categoryWithoutDescription.getOptionalDescription().isEmpty());
+    }
+
+    @Test
+    void whenCategoryNameHasLeadingOrTrailingSpaces_thenSpacesAreTrimmed() {
+        // Arrange & Act
+        Category category = Category.builder()
+                .withName("  Education  ")
+                .withDescription("  Complaints about education  ")
+                .build();
+
+        // Assert
+        assertEquals("Education", category.getName());
+        assertEquals("  Complaints about education  ", category.getDescription());
+    }
+
+    @Test
+    void whenAddingComplaints_thenComplaintsAreManagedCorrectly() {
+        // Arrange
+        Category category = Category.builder()
+                .withName("Transport")
+                .build();
+
+        Complaint complaint1 = Complaint.builder()
+                .withTitle("Bus delay")
+                .withDescription("Buses are often late.")
+                .withLocation(new Location("Main Street", "12", "12345", "City")) // Add required fields
+                .withUser(new User()) // Add user if required
+                .build();
+
+        Complaint complaint2 = Complaint.builder()
+                .withTitle("Train noise")
+                .withDescription("Trains make a lot of noise.")
+                .withLocation(new Location("Main Street", "12", "12345", "City")) // Add required fields
+                .withUser(new User()) // Add user if required
+                .build();
+
+        // Act
+        category.getComplaints().add(complaint1);
+        category.getComplaints().add(complaint2);
+
+        // Assert
+        assertEquals(2, category.getComplaints().size());
+        assertTrue(category.getComplaints().contains(complaint1));
+        assertTrue(category.getComplaints().contains(complaint2));
+    }
+
+
+    @Test
+    void whenRemovingComplaints_thenComplaintsAreManagedCorrectly() {
+        // Arrange
+        Category category = Category.builder()
+                .withName("Transport")
+                .build();
+
+        Complaint complaint = Complaint.builder()
+                .withTitle("Bus delay")
+                .withDescription("Buses are often late.")
+                .withLocation(new Location("Main Street", "12", "12345", "City")) // Add required fields
+                .withUser(new User()) // Add user if required
+                .build();
+
+        category.getComplaints().add(complaint);
+
+        // Act
+        category.getComplaints().remove(complaint);
+
+        // Assert
+        assertEquals(0, category.getComplaints().size());
+    }
+
+
+    @Test
+    void whenIdIsSet_thenCategoryHasId() {
+        // Arrange
+        Category category = Category.builder()
+                .withName("Education")
+                .withDescription("Education-related complaints")
+                .build();
+
+        // Act
+        category.setId(100);
+
+        // Assert
+        assertEquals(100, category.getId());
     }
 }
