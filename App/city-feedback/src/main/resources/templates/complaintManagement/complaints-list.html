@@ -24,16 +24,31 @@
       <tr>
         <th>Titel</th>
         <th>Beschreibung</th>
+        <th>Kategorie</th>
         <th>Standort</th>
         <th>Erstellungsdatum</th>
+        <th></th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="complaint : ${complaints}">
         <td th:text="${complaint.title}"></td>
         <td th:text="${complaint.description}"></td>
+        <td th:text="${complaint.categoryName}"></td>
         <td th:text="${complaint.location}"></td>
         <td th:text="${complaint.createdAt}"></td>
+        <td>
+          <a th:href="@{/complaints/{id}/edit(id=${complaint.id})}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+        </td>
+        <td>
+          <a href="javascript:void(0);"
+             class="btn btn-primary btn-sm"
+             th:onclick="|if(confirm('Möchten Sie diese Beschwerde wirklich löschen?')) window.location='/complaints/' + ${complaint.id} + '/delete'|"
+             title="Löschen">
+            <i class="bi bi-trash"></i>
+          </a>
+        </td>
       </tr>
       </tbody>
     </table>

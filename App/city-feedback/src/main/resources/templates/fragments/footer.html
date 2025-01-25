@@ -4,10 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Footer</title>
+    <style>
+        .custom-hover:hover {
+            color: white !important;
+            opacity: 80%;
+        }
+    </style>
 </head>
 <body>
   <div th:fragment="footer">
-      <footer class="bg-dark text-center text-white fixed-bottom">
+      <footer class="bg-dark text-center text-white">
           <div class="container p-4 pb-0">
               <section class="mb-4">
                   <a class="btn btn-outline-light btn-floating m-1" href="#" role="button"><i class="fab fa-facebook-f"></i></a>
@@ -17,6 +23,9 @@
                   <a class="btn btn-outline-light btn-floating m-1" href="#" role="button"><i class="fab fa-linkedin-in"></i></a>
                   <a class="btn btn-outline-light btn-floating m-1" href="#" role="button"><i class="fab fa-github"></i></a>
               </section>
+          </div>
+          <div th:if="${currentUser == null}">
+              <a class="text-secondary custom-hover" th:href="@{/sign-in(employee='YES')}">Als Mitarbeiter anmelden</a>
           </div>
           <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
               © 2024 Copyright:

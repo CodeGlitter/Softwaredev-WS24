@@ -1,10 +1,13 @@
 package com.example.city_feedback.authentication.application;
 
 import com.example.city_feedback.authentication.application.dto.UserRegistrationDto;
+import com.example.city_feedback.authentication.domain.models.Role;
 import com.example.city_feedback.authentication.exceptions.InvalidInputException;
 import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.RoleRepository;
 import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.authentication.application.services.AuthenticationService;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +35,12 @@ public class AuthenticationServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
+    private HttpSession session;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -34,7 +48,11 @@ public class AuthenticationServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        try (AutoCloseable mocks = MockitoAnnotations.openMocks(this)) {
+            when(session.getAttribute("isEmployee")).thenReturn("NO");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -50,6 +68,11 @@ public class AuthenticationServiceTest {
 
         // Mock password encoding and user saving
         when(passwordEncoder.encode("password234")).thenReturn("encodedPassword");
+
+        // Mock role retrieval
+        Role role = new Role("Bürger");
+        when(roleRepository.findByName("Bürger")).thenReturn(Optional.of(role));
+
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // Act
@@ -67,6 +90,7 @@ public class AuthenticationServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository, times(1)).save(userCaptor.capture());
         assertEquals("encodedPassword", userCaptor.getValue().getPassword());
+        assertEquals(List.of(role), userCaptor.getValue().getRoles());
     }
 
     @Test
@@ -78,9 +102,9 @@ public class AuthenticationServiceTest {
         // Mock repository to return a user when the email is checked
         when(userRepository.findByEmail("john.doe@example.com")).thenReturn(new User());
 
-        InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
-            authenticationService.save(userRegistrationDto);
-        });
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+            authenticationService.save(userRegistrationDto)
+        );
         assertEquals("E-Mail bereits in Gebrauch", exception.getMessage());
     }
 
@@ -124,8 +148,8 @@ public class AuthenticationServiceTest {
     @DisplayName("Should load user by username (email) successfully")
     void loadUserByUsername_ShouldReturnUserDetails() {
         // Arrange
-        User user = new User("John", "Doe", "john.doe@example.com", "1234567890", "encodedPassword");
-        when(userRepository.findByEmail("john.doe@example.com")).thenReturn(user);
+        User user = new User("John", "Doe", "john.doe@example.com", "1234567890", "encodedPassword", Collections.emptyList());
+        when(userRepository.findByEmailAndRole("john.doe@example.com", "Bürger")).thenReturn(user);
 
         // Act
         UserDetails userDetails = authenticationService.loadUserByUsername("john.doe@example.com");

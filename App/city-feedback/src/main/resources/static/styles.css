@@ -1,6 +1,11 @@
 h2 {
     background: green;
 }
+
 header {
     background-color: indianred;
+}
+
+.form-group button[type="submit"] {
+    margin: 0.5rem 0 0.5rem 0;
 }
