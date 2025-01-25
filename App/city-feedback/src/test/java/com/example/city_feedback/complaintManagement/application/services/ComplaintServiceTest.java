@@ -1,101 +1,226 @@
 package com.example.city_feedback.complaintManagement.application.services;
 
+import com.example.city_feedback.authentication.domain.models.User;
+import com.example.city_feedback.authentication.infrastructure.repositories.UserRepository;
 import com.example.city_feedback.complaintManagement.application.commands.CreateComplaintCommand;
-import com.example.city_feedback.complaintManagement.application.dto.ComplaintDto;
+import com.example.city_feedback.complaintManagement.domain.models.Category;
 import com.example.city_feedback.complaintManagement.domain.models.Complaint;
 import com.example.city_feedback.complaintManagement.domain.valueObjects.Location;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.CategoryRepository;
 import com.example.city_feedback.complaintManagement.infrastructure.repositories.ComplaintRepository;
+import com.example.city_feedback.complaintManagement.infrastructure.repositories.LocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for the {@link ComplaintService} class.
- * Verifies the correctness of complaint creation and retrieval logic.
+ * Comprehensive Unit Tests for the {@link ComplaintService} class.
+ * Covers all primary methods, including complaint creation, updates, and validation.
  */
-class ComplaintServiceTest {
+public class ComplaintServiceTest {
 
     @Mock
     private ComplaintRepository complaintRepository;
 
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private LocationRepository locationRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
     private ComplaintService complaintService;
 
-    /**
-     * Initializes the test environment by setting up mocks for dependencies.
-     * This method is executed before each test case.
-     */
+    private User mockUser;
+    private Category mockCategory;
+    private Location mockLocation;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        complaintService = new ComplaintService(complaintRepository);
+
+        // Mock Security Context
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("test_user@example.com");
+        SecurityContextHolder.setContext(securityContext);
+
+        // Mock user
+        mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test_user@example.com");
+
+        // Mock category
+        mockCategory = new Category();
+        mockCategory.setId(1);
+        mockCategory.setName("Road Issue");
+
+        // Mock location
+        mockLocation = new Location("Mock Street", "1", "12345", "City");
     }
 
     /**
-     * Tests that a complaint is successfully created and saved to the repository.
-     * Verifies that the correct {@link Complaint} is returned and saved.
+     * Tests successful complaint creation with valid inputs.
      */
     @Test
-    void whenCreateComplaint_thenReturnsComplaintAndSavesToRepository() {
+    void whenValidCommand_thenComplaintIsCreatedSuccessfully() {
         // Arrange
-        CreateComplaintCommand command = new CreateComplaintCommand(
-                "Title",
-                "Description",
-                "Street",
-                "1",
-                "12345",
-                "City"
-        );
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Test Complaint");
+        command.setDescription("Description");
+        command.setStreet("Test Street");
+        command.setHouseNumber("123");
+        command.setPostalCode("12345");
+        command.setCity("Test City");
+        command.setCategoryId(1);
 
-        Location location = new Location("Street", "1", "12345", "City");
-
-        Complaint complaint = Complaint.builder()
-                .withTitle("Title")
-                .withDescription("Description")
-                .withLocation(location)
-                .build();
-
-        when(complaintRepository.save(any(Complaint.class))).thenReturn(complaint);
+        when(userRepository.findByEmail("test_user@example.com")).thenReturn(mockUser);
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(mockCategory));
+        when(locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
+                "Test Street", "123", "12345", "Test City"))
+                .thenReturn(Optional.of(mockLocation));
+        when(complaintRepository.save(any(Complaint.class))).thenAnswer(invocation -> {
+            Complaint complaint = invocation.getArgument(0);
+            complaint.setId(1L);
+            return complaint;
+        });
 
         // Act
         Complaint result = complaintService.createComplaint(command);
 
         // Assert
-        assertEquals("Title", result.getTitle());
+        assertNotNull(result);
+        assertEquals("Test Complaint", result.getTitle());
         assertEquals("Description", result.getDescription());
-        assertEquals(location, result.getLocation());
-        verify(complaintRepository).save(any(Complaint.class));
+        assertEquals(mockUser, result.getCreator());
+        assertEquals(mockCategory, result.getCategory());
+        assertEquals(mockLocation, result.getLocation());
     }
 
     /**
-     * Tests that all complaints are retrieved from the repository and converted into {@link ComplaintDto} objects.
-     * Verifies the correctness of the DTO transformation logic.
+     * Tests that an exception is thrown when an invalid category ID is provided.
      */
     @Test
-    void whenFindAllComplaints_thenReturnsListOfDtos() {
+    void whenInvalidCategory_thenThrowsException() {
         // Arrange
-        Location location = new Location("Street", "1", "12345", "City");
-        Complaint complaint = Complaint.builder()
-                .withTitle("Test Title")
-                .withDescription("Test Description")
-                .withLocation(location)
-                .build();
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setCategoryId(99);
 
-        when(complaintRepository.findAll()).thenReturn(List.of(complaint));
+        when(categoryRepository.findById(99)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> complaintService.createComplaint(command));
+    }
+
+    /**
+     * Tests that an exception is thrown when location data is incomplete.
+     */
+    @Test
+    void whenIncompleteLocation_thenThrowsException() {
+        // Arrange
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Test Complaint");
+        command.setStreet(null); // Missing street
+        command.setCategoryId(1);
+
+        when(userRepository.findByEmail("test_user@example.com")).thenReturn(mockUser);
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(mockCategory));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> complaintService.createComplaint(command));
+    }
+
+    /**
+     * Tests updating an existing complaint with valid inputs.
+     */
+    @Test
+    void whenValidUpdateCommand_thenComplaintIsUpdatedSuccessfully() {
+        // Arrange
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Updated Complaint");
+        command.setDescription("Updated Description");
+        command.setStreet("Updated Street");
+        command.setHouseNumber("456");
+        command.setPostalCode("67890");
+        command.setCity("Updated City");
+        command.setCategoryId(1);
+
+        Complaint existingComplaint = new Complaint();
+        existingComplaint.setId(1L);
+        existingComplaint.setTitle("Old Complaint");
+
+        when(complaintRepository.findById(1L)).thenReturn(Optional.of(existingComplaint));
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(mockCategory));
+        when(locationRepository.findByStreetAndHouseNumberAndPostalCodeAndCity(
+                "Updated Street", "456", "67890", "Updated City"))
+                .thenReturn(Optional.of(mockLocation));
+        when(complaintRepository.save(any(Complaint.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        List<ComplaintDto> result = complaintService.findAllComplaints();
+        Complaint result = complaintService.updateComplaint(1L, command);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals("Test Title", result.get(0).getTitle());
-        assertEquals("Test Description", result.get(0).getDescription());
-        assertEquals(location.toString(), result.get(0).getLocation());
-        verify(complaintRepository).findAll();
+        assertNotNull(result);
+        assertEquals("Updated Complaint", result.getTitle());
+        assertEquals("Updated Description", result.getDescription());
+        assertEquals(mockCategory, result.getCategory());
+        assertEquals(mockLocation, result.getLocation());
+    }
+
+    /**
+     * Tests that an exception is thrown when updating a non-existent complaint.
+     */
+    @Test
+    void whenUpdateNonExistentComplaint_thenThrowsException() {
+        // Arrange
+        CreateComplaintCommand command = new CreateComplaintCommand();
+        command.setTitle("Updated Complaint");
+
+        when(complaintRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> complaintService.updateComplaint(1L, command));
+    }
+
+    /**
+     * Tests that a complaint is successfully deleted when it exists.
+     */
+    @Test
+    void whenComplaintExists_thenDeletesSuccessfully() {
+        // Arrange
+        Long complaintId = 1L;
+        when(complaintRepository.existsById(complaintId)).thenReturn(true);
+
+        // Act
+        complaintService.deleteComplaint(complaintId);
+
+        // Assert
+        verify(complaintRepository, times(1)).deleteById(complaintId);
+    }
+
+    /**
+     * Tests that an exception is thrown when trying to delete a non-existent complaint.
+     */
+    @Test
+    void whenComplaintDoesNotExist_thenThrowsException() {
+        // Arrange
+        Long complaintId = 1L;
+        when(complaintRepository.existsById(complaintId)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> complaintService.deleteComplaint(complaintId));
     }
 }

@@ -1,11 +1,29 @@
 package com.example.city_feedback.complaintManagement.domain.valueObjects;
+import com.example.city_feedback.complaintManagement.domain.models.Complaint;
+import jakarta.persistence.*;
+
+import java.util.Collection;
 import java.util.regex.Pattern;
 
+@Entity
+@Table(name = "locations")
 public class Location {
-    private final String street;
-    private final String houseNumber;
-    private final String postalCode;
-    private final String city;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String street;
+
+    private String houseNumber;
+
+    private String postalCode;
+
+    private String city;
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<Complaint> complaints;
+
 
     // Validation patterns
     private static final Pattern STREET_PATTERN = Pattern.compile("^[A-Za-zäöüÄÖÜß\\s.]+$");
@@ -13,63 +31,32 @@ public class Location {
     private static final Pattern POSTAL_CODE_PATTERN = Pattern.compile("^[0-9]{5}$");
     private static final Pattern CITY_PATTERN = Pattern.compile("^[A-Za-zäöüÄÖÜß\\s]+$");
 
+    public Location() {
+
+    }
+
     public Location(String street, String houseNumber, String postalCode, String city) {
-        if (!isValidStreet(street)) {
-            throw new IllegalArgumentException("Invalid street name.");
-        }
-        if (!isValidHouseNumber(houseNumber)) {
-            throw new IllegalArgumentException("Invalid house number.");
-        }
-        if (!isValidPostalCode(postalCode)) {
-            throw new IllegalArgumentException("Invalid postal code.");
-        }
-        if (!isValidCity(city)) {
-            throw new IllegalArgumentException("Invalid city name.");
-        }
-
-        this.street = street.trim();
-        this.houseNumber = houseNumber.trim();
-        this.postalCode = postalCode.trim();
-        this.city = city.trim();
+        this.street = validateAndTrim(street, STREET_PATTERN, "Ungültige Straße.");
+        this.houseNumber = validateAndTrim(houseNumber, HOUSE_NUMBER_PATTERN, "Ungültige Hausnummer.");
+        this.postalCode = validateAndTrim(postalCode, POSTAL_CODE_PATTERN, "Ungültige PLZ.");
+        this.city = validateAndTrim(city, CITY_PATTERN, "Ungültige Stadt.");
     }
 
     /**
-     * Validates the street name.
+     * Validates the given value against the specified pattern and trims it.
+     * If the value does not match the pattern, an IllegalArgumentException is thrown with the provided error message.
      *
-     * @param street the street name to validate
-     * @return {@code true} if the street name is valid, {@code false} otherwise
+     * @param value the value to be validated and trimmed
+     * @param pattern the pattern to validate the value against
+     * @param errorMessage the error message to be used in the exception if validation fails
+     * @return the trimmed value if it is valid
+     * @throws IllegalArgumentException if the value does not match the pattern
      */
-    private boolean isValidStreet(String street) {
-        return street != null && STREET_PATTERN.matcher(street.trim()).matches();
-    }
-
-    /**
-     * Validates the house number.
-     *
-     * @param houseNumber the house number to validate
-     * @return {@code true} if the house number is valid, {@code false} otherwise
-     */
-    private boolean isValidHouseNumber(String houseNumber) {
-        return houseNumber != null && HOUSE_NUMBER_PATTERN.matcher(houseNumber.trim()).matches();
-    }
-
-    /**
-     * Validates the postal code.
-     *
-     * @param postalCode the postal code to validate
-     * @return {@code true} if the postal code is valid, {@code false} otherwise
-     */
-    private boolean isValidPostalCode(String postalCode) {
-        return postalCode != null && POSTAL_CODE_PATTERN.matcher(postalCode.trim()).matches();
-    }
-
-    /**
-     * Validates all fields of the location object.
-     *
-     * @return {@code true} if all fields are valid, {@code false} otherwise
-     */
-    private boolean isValidCity(String city) {
-        return city != null && CITY_PATTERN.matcher(city.trim()).matches();
+    private String validateAndTrim(String value, Pattern pattern, String errorMessage) {
+        if (value == null || !pattern.matcher(value.trim()).matches()) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return value.trim();
     }
 
     /**
@@ -78,10 +65,21 @@ public class Location {
      * @return {@code true} if all fields are valid, {@code false} otherwise
      */
     public boolean isValid() {
-        return isValidStreet(street) &&
-                isValidHouseNumber(houseNumber) &&
-                isValidPostalCode(postalCode) &&
-                isValidCity(city);
+        return isValidField(street, STREET_PATTERN) &&
+                isValidField(houseNumber, HOUSE_NUMBER_PATTERN) &&
+                isValidField(postalCode, POSTAL_CODE_PATTERN) &&
+                isValidField(city, CITY_PATTERN);
+    }
+  
+     /**
+     * Utility method to validate a field with a pattern.
+     *
+     * @param value   the field value
+     * @param pattern the pattern to match
+     * @return {@code true} if the value is valid, {@code false} otherwise
+     */
+    private boolean isValidField(String value, Pattern pattern) {
+        return value != null && pattern.matcher(value.trim()).matches();
     }
 
     /**
